@@ -17,16 +17,18 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
     specificDate: ''
   });
 
+  const [selectedDays, setSelectedDays] = useState([1]);
   const [collisionWarning, setCollisionWarning] = useState(null);
   const [validationError, setValidationError] = useState(null);
 
   useEffect(() => {
     if (initialLesson) {
+      const initialDay = Number(initialLesson.dayOfWeek || 1);
       setFormData({
         id: initialLesson.id,
         title: initialLesson.title || '',
         type: initialLesson.type || 'school',
-        dayOfWeek: initialLesson.dayOfWeek || 1,
+        dayOfWeek: initialDay,
         startTime: initialLesson.startTime || '08:30',
         endTime: initialLesson.endTime || '09:15',
         location: initialLesson.location || '',
@@ -34,6 +36,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
         periodicity: initialLesson.periodicity || 'weekly',
         specificDate: initialLesson.specificDate || ''
       });
+      setSelectedDays([initialDay]);
     } else {
       setFormData({
         title: '',
@@ -46,30 +49,36 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
         periodicity: 'weekly',
         specificDate: ''
       });
+      setSelectedDays([1]);
     }
     setValidationError(null);
   }, [initialLesson, isOpen]);
 
   // Check collision whenever form values change
   useEffect(() => {
-    if (!formData.startTime || !formData.endTime || !formData.dayOfWeek) {
+    if (!formData.startTime || !formData.endTime || selectedDays.length === 0) {
       setCollisionWarning(null);
       return;
     }
 
-    const result = checkTimeCollision(
-      formData,
-      existingLessons || [],
-      formData.id || null,
-      currentParity
-    );
-
-    if (result.hasCollision) {
-      setCollisionWarning(result.message);
-    } else {
-      setCollisionWarning(null);
+    let warningMsg = null;
+    for (const day of selectedDays) {
+      const testData = { ...formData, dayOfWeek: day };
+      const result = checkTimeCollision(
+        testData,
+        existingLessons || [],
+        formData.id || null,
+        currentParity
+      );
+      if (result.hasCollision) {
+        const dayObj = DAYS_OF_WEEK.find(d => d.id === day);
+        warningMsg = `${dayObj?.short || `День ${day}`}: ${result.message}`;
+        break;
+      }
     }
-  }, [formData, existingLessons, currentParity]);
+
+    setCollisionWarning(warningMsg);
+  }, [formData, selectedDays, existingLessons, currentParity]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -90,8 +99,36 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
       setValidationError('Время окончания должно быть позже времени начала');
       return;
     }
+    if (selectedDays.length === 0) {
+      setValidationError('Выберите хотя бы один день недели');
+      return;
+    }
 
-    onSave(formData);
+    if (formData.id) {
+      if (selectedDays.length === 1) {
+        onSave({ ...formData, dayOfWeek: selectedDays[0] });
+      } else {
+        const updatedFirst = { ...formData, dayOfWeek: selectedDays[0] };
+        const newOthers = selectedDays.slice(1).map(day => ({
+          ...formData,
+          dayOfWeek: day,
+          id: 'user-add-' + Date.now() + '-' + day
+        }));
+        onSave([updatedFirst, ...newOthers]);
+      }
+    } else {
+      if (selectedDays.length === 1) {
+        onSave({ ...formData, dayOfWeek: selectedDays[0] });
+      } else {
+        const newLessons = selectedDays.map(day => ({
+          ...formData,
+          dayOfWeek: day,
+          id: 'user-add-' + Date.now() + '-' + day
+        }));
+        onSave(newLessons);
+      }
+    }
+
     onClose();
   };
 
@@ -180,23 +217,67 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
               </div>
             </div>
 
-            {/* Day of Week & Periodicity */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Multi-Day Selection & Periodicity */}
+            <div className="space-y-3">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  День недели
-                </label>
-                <select
-                  value={formData.dayOfWeek}
-                  onChange={(e) => handleChange('dayOfWeek', Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800"
-                >
-                  {DAYS_OF_WEEK.map(day => (
-                    <option key={day.id} value={day.id}>
-                      {day.name} ({day.short})
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block font-semibold text-slate-700">
+                    Дни проведения <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="flex items-center gap-1 text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDays([1, 2, 3, 4, 5, 6, 7])}
+                      className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                        selectedDays.length === 7
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      Ежедневно
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedDays([1, 2, 3, 4, 5])}
+                      className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                        selectedDays.length === 5 && [1, 2, 3, 4, 5].every(d => selectedDays.includes(d))
+                          ? 'bg-slate-900 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      Пн-Пт
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-7 gap-1">
+                  {DAYS_OF_WEEK.map(day => {
+                    const isSelected = selectedDays.includes(day.id);
+                    return (
+                      <button
+                        key={day.id}
+                        type="button"
+                        onClick={() => {
+                          if (isSelected) {
+                            if (selectedDays.length > 1) {
+                              setSelectedDays(selectedDays.filter(d => d !== day.id));
+                            }
+                          } else {
+                            setSelectedDays([...selectedDays, day.id].sort((a, b) => a - b));
+                          }
+                        }}
+                        className={`py-1.5 rounded-lg text-xs font-bold transition-all text-center ${
+                          isSelected
+                            ? 'bg-slate-900 text-white shadow-xs'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+                        }`}
+                        title={day.name}
+                      >
+                        {day.short}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               <div>

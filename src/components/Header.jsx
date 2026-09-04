@@ -78,7 +78,7 @@ export function Header({
 
             <button
               onClick={onResetWeek}
-              title="Сбросить на 3 сентября"
+              title="Перейти на сегодняшний день"
               className="ml-1 px-1.5 py-0.5 text-xs text-slate-500 hover:text-slate-900 transition-colors"
             >
               Сегодня

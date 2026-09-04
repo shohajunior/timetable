@@ -19,7 +19,7 @@ import { getCurrentTimeMinutes } from './utils/timeStatus';
 import { Sparkles } from 'lucide-react';
 
 function getDayOfWeekNumber(d) {
-  const day = d.getDay(); // 0 = Sun, 1 = Mon, ..., 4 = Thu
+  const day = d.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
   return day === 0 ? 7 : day;
 }
 
@@ -27,17 +27,13 @@ export default function App() {
   // Initial State Initialization
   const [lessons, setLessons] = useState(() => loadLessonsFromStorage());
 
-  // Default Current Date: September 3, 2026 (Thursday)
-  const [currentDate, setCurrentDate] = useState(() => {
-    const d = new Date();
-    d.setFullYear(2026, 8, 3);
-    return d;
-  });
+  // Dynamic Current Date: default to real current date
+  const [currentDate, setCurrentDate] = useState(() => new Date());
 
   const [viewMode, setViewMode] = useState('day'); // 'day' | 'week'
   
-  // Dynamically set selectedDayOfWeek based on currentDate (Sept 3 = 4 = Thursday)
-  const [selectedDayOfWeek, setSelectedDayOfWeek] = useState(() => getDayOfWeekNumber(new Date(2026, 8, 3)));
+  // Dynamically set selectedDayOfWeek based on current date
+  const [selectedDayOfWeek, setSelectedDayOfWeek] = useState(() => getDayOfWeekNumber(new Date()));
 
   // Live minute ticker for current lesson status & countdown
   const [nowMinutes, setNowMinutes] = useState(() => getCurrentTimeMinutes());
@@ -45,9 +41,13 @@ export default function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setNowMinutes(getCurrentTimeMinutes());
+      const now = new Date();
+      if (now.toDateString() !== currentDate.toDateString()) {
+        setCurrentDate(now);
+      }
     }, 10000); // refresh every 10 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [currentDate]);
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,7 +68,7 @@ export default function App() {
   const currentWeekNumber = getWeekNumberFromSept(currentDate);
   const currentParity = getWeekParity(currentDate);
 
-  const todayDayOfWeek = getDayOfWeekNumber(new Date(2026, 8, 3));
+  const todayDayOfWeek = getDayOfWeekNumber(new Date());
   const isSelectedToday = selectedDayOfWeek === todayDayOfWeek;
 
   // Toast trigger
@@ -92,15 +92,22 @@ export default function App() {
 
   const handleResetWeek = () => {
     const d = new Date();
-    d.setFullYear(2026, 8, 3);
     setCurrentDate(d);
-    setSelectedDayOfWeek(getDayOfWeekNumber(d)); // 4 = Thursday
-    showToast('Сброшено на 3 сентября (Четверг)');
+    setSelectedDayOfWeek(getDayOfWeekNumber(d));
+    showToast('Сброшено на сегодняшний день');
   };
 
   // CRUD Handlers
   const handleSaveLesson = (lessonData) => {
-    if (lessonData.id) {
+    if (Array.isArray(lessonData)) {
+      setLessons(prev => {
+        const idsToRemove = new Set(lessonData.map(l => l.id).filter(Boolean));
+        const filtered = prev.filter(l => !idsToRemove.has(l.id));
+        return [...filtered, ...lessonData];
+      });
+      confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+      showToast(`Добавлено занятий: ${lessonData.length}`);
+    } else if (lessonData.id) {
       setLessons(prev => prev.map(l => l.id === lessonData.id ? lessonData : l));
       showToast(`Предмет "${lessonData.title}" обновлен`);
     } else {

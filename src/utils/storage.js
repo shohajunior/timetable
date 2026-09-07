@@ -1,9 +1,13 @@
 import { INITIAL_LESSONS } from '../data/seedData';
 
-const STORAGE_KEY = 'school_timetable_10b_v2'; // Increment key so old untranslated cache is reset to Russian!
+const STORAGE_KEY = 'school_timetable_10b_v3';
 
 export function loadLessonsFromStorage() {
   try {
+    // Clear old versions if present
+    localStorage.removeItem('school_timetable_10b_v1');
+    localStorage.removeItem('school_timetable_10b_v2');
+
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_LESSONS));

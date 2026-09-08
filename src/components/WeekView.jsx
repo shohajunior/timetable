@@ -15,7 +15,7 @@ export function WeekView({
 }) {
   return (
     <div className="flex-1 h-full overflow-hidden">
-      <div className="grid grid-cols-1 sm:grid-cols-7 gap-1.5 h-full">
+      <div className="flex sm:grid flex-nowrap sm:grid-cols-7 gap-2 sm:gap-1.5 h-full overflow-x-auto sm:overflow-visible snap-x snap-mandatory pb-2 sm:pb-0 no-scrollbar">
         {DAYS_OF_WEEK.map((day) => {
           const isTodayColumn = Number(day.id) === Number(todayDayOfWeek);
           const dayLessons = lessons
@@ -26,7 +26,7 @@ export function WeekView({
           return (
             <div
               key={day.id}
-              className={`flex flex-col rounded-xl bg-white border shadow-2xs overflow-hidden h-full ${
+              className={`flex flex-col rounded-xl bg-white border shadow-2xs overflow-hidden h-full min-w-[82vw] xs:min-w-[270px] sm:min-w-0 snap-center shrink-0 sm:shrink ${
                 isTodayColumn ? 'border-slate-400 ring-1 ring-slate-300' : 'border-slate-200'
               }`}
             >

@@ -136,30 +136,30 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-xs">
         <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.96 }}
-          className="relative w-full max-w-md rounded-xl bg-white border border-slate-200 shadow-xl overflow-hidden text-slate-900"
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 20, scale: 0.98 }}
+          className="relative w-full max-w-md rounded-t-2xl sm:rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90dvh] text-slate-900"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 bg-slate-50">
-            <h3 className="text-base font-bold flex items-center gap-2 text-slate-900">
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-slate-100 bg-slate-50 shrink-0">
+            <h3 className="text-sm sm:text-base font-bold flex items-center gap-2 text-slate-900">
               {formData.id ? 'Редактировать предмет' : 'Новый предмет / событие'}
             </h3>
             <button
               onClick={onClose}
-              className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5 sm:w-4 sm:h-4" />
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto text-xs">
+          <form onSubmit={handleSubmit} className="flex-1 p-4 sm:p-5 space-y-4 overflow-y-auto no-scrollbar text-xs">
             {/* Collision Warning Banner */}
             {collisionWarning && (
-              <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-2 font-medium">
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-2 font-medium">
                 <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
                   <div className="font-bold text-amber-950">Конфликт расписания!</div>
@@ -170,7 +170,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
 
             {/* Validation Error Banner */}
             {validationError && (
-              <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 font-medium">
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 font-medium">
                 {validationError}
               </div>
             )}
@@ -185,7 +185,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                 value={formData.title}
                 onChange={(e) => handleChange('title', e.target.value)}
                 placeholder="напр. Algebra, Physical Culture, Репетитор"
-                className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-800 transition-colors"
+                className="w-full px-3 py-2.5 sm:py-2 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-800 transition-colors text-xs sm:text-sm"
                 required
               />
             </div>
@@ -205,9 +205,9 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                     key={cat.id}
                     type="button"
                     onClick={() => handleChange('type', cat.id)}
-                    className={`py-1.5 px-2 rounded-lg font-medium border text-center transition-all ${
+                    className={`py-2 px-2 rounded-xl font-medium border text-center transition-all ${
                       formData.type === cat.id
-                        ? 'border-slate-900 bg-slate-900 text-white'
+                        ? 'border-slate-900 bg-slate-900 text-white shadow-xs'
                         : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300'
                     }`}
                   >
@@ -224,11 +224,11 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                   <label className="block font-semibold text-slate-700">
                     Дни проведения <span className="text-rose-500">*</span>
                   </label>
-                  <div className="flex items-center gap-1 text-[11px]">
+                  <div className="flex items-center gap-1.5 text-[11px]">
                     <button
                       type="button"
                       onClick={() => setSelectedDays([1, 2, 3, 4, 5, 6, 7])}
-                      className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                      className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
                         selectedDays.length === 7
                           ? 'bg-slate-900 text-white'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -239,7 +239,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                     <button
                       type="button"
                       onClick={() => setSelectedDays([1, 2, 3, 4, 5])}
-                      className={`px-2 py-0.5 rounded font-medium transition-colors ${
+                      className={`px-2.5 py-1 rounded-lg font-medium transition-colors ${
                         selectedDays.length === 5 && [1, 2, 3, 4, 5].every(d => selectedDays.includes(d))
                           ? 'bg-slate-900 text-white'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -250,7 +250,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                   </div>
                 </div>
 
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
                   {DAYS_OF_WEEK.map(day => {
                     const isSelected = selectedDays.includes(day.id);
                     return (
@@ -266,7 +266,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                             setSelectedDays([...selectedDays, day.id].sort((a, b) => a - b));
                           }
                         }}
-                        className={`py-1.5 rounded-lg text-xs font-bold transition-all text-center ${
+                        className={`py-2 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center ${
                           isSelected
                             ? 'bg-slate-900 text-white shadow-xs'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
@@ -287,7 +287,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                 <select
                   value={formData.periodicity}
                   onChange={(e) => handleChange('periodicity', e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800 text-xs sm:text-sm"
                 >
                   <option value="weekly">Еженедельно</option>
                   <option value="toq_only">TOQ ONLY (Нечётная)</option>
@@ -307,7 +307,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => handleChange('startTime', e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800 text-xs sm:text-sm"
                   required
                 />
               </div>
@@ -320,7 +320,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => handleChange('endTime', e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800 text-xs sm:text-sm"
                   required
                 />
               </div>
@@ -337,7 +337,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                   value={formData.location}
                   onChange={(e) => handleChange('location', e.target.value)}
                   placeholder="напр. каб. 1-08"
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800 text-xs sm:text-sm"
                 />
               </div>
 
@@ -350,13 +350,13 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                   value={formData.teacher}
                   onChange={(e) => handleChange('teacher', e.target.value)}
                   placeholder="напр. Amankulov S"
-                  className="w-full px-3 py-2 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800"
+                  className="w-full px-3 py-2.5 sm:py-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:border-slate-800 text-xs sm:text-sm"
                 />
               </div>
             </div>
 
             {/* Buttons */}
-            <div className="pt-3 flex items-center justify-between border-t border-slate-100">
+            <div className="pt-3 pb-1 flex items-center justify-between border-t border-slate-100 shrink-0">
               {formData.id ? (
                 <button
                   type="button"
@@ -366,9 +366,9 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                       onClose();
                     }
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold transition-colors flex items-center gap-1"
+                  className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold transition-colors flex items-center gap-1 text-xs"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Удалить
+                  <Trash2 className="w-4 h-4" /> Удалить
                 </button>
               ) : <div />}
 
@@ -376,15 +376,15 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors"
+                  className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors text-xs"
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-semibold flex items-center gap-1 transition-colors"
+                  className="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold flex items-center gap-1.5 transition-colors text-xs shadow-xs"
                 >
-                  <Save className="w-3.5 h-3.5" /> Сохранить
+                  <Save className="w-4 h-4" /> Сохранить
                 </button>
               </div>
             </div>

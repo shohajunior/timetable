@@ -260,134 +260,145 @@ export function GeminiChatWidget({
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        className="fixed bottom-6 right-6 z-50 w-full max-w-sm rounded-xl bg-white border border-slate-200 shadow-xl overflow-hidden flex flex-col h-[460px] text-xs text-slate-900"
-      >
-        {/* Header with Gemini Logo */}
-        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-slate-800" />
-            <h3 className="font-bold text-slate-900">Gemini Assistant</h3>
-          </div>
+      <div className="fixed inset-0 z-50 pointer-events-none flex flex-col justify-end sm:block">
+        {/* Backdrop on mobile for easy dismissal */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs sm:hidden pointer-events-auto"
+        />
 
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setShowKeyInput(!showKeyInput)}
-              title="API Key"
-              className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
-            >
-              <Key className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={onClose}
-              className="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 30, scale: 0.96 }}
+          className="relative pointer-events-auto sm:fixed sm:bottom-6 sm:right-6 w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden flex flex-col h-[80dvh] sm:h-[460px] text-xs text-slate-900"
+        >
+          {/* Header with Gemini Logo */}
+          <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-slate-800" />
+              <h3 className="font-bold text-slate-900 text-sm sm:text-xs">Gemini Assistant</h3>
+            </div>
 
-        {/* API Key Drawer */}
-        {showKeyInput && (
-          <form onSubmit={handleSaveKey} className="p-2.5 bg-slate-50 border-b border-slate-200 space-y-1.5">
-            <div className="font-medium text-slate-700">API Key Gemini (опционально):</div>
-            <div className="flex gap-2">
-              <input
-                type="password"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="AIzaSy..."
-                className="flex-1 px-2.5 py-1 rounded bg-white border border-slate-300 text-slate-900 focus:outline-none"
-              />
+            <div className="flex items-center gap-1">
               <button
-                type="submit"
-                className="px-2.5 py-1 bg-slate-900 text-white rounded font-medium"
+                onClick={() => setShowKeyInput(!showKeyInput)}
+                title="API Key"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
               >
-                ОК
+                <Key className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+              </button>
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors"
+              >
+                <X className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
             </div>
-          </form>
-        )}
+          </div>
 
-        {/* Messages Body */}
-        <div className="flex-1 p-3 overflow-y-auto space-y-2 bg-white">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[88%] p-2.5 rounded-lg whitespace-pre-line ${
-                  msg.sender === 'user'
-                    ? 'bg-slate-900 text-white'
-                    : msg.sender === 'system'
-                    ? 'bg-slate-100 border border-slate-200 text-slate-800'
-                    : 'bg-slate-100 text-slate-800 border border-slate-200'
-                }`}
-              >
-                {msg.text}
+          {/* API Key Drawer */}
+          {showKeyInput && (
+            <form onSubmit={handleSaveKey} className="p-3 bg-slate-50 border-b border-slate-200 space-y-2 shrink-0">
+              <div className="font-medium text-slate-700">API Key Gemini (опционально):</div>
+              <div className="flex gap-2">
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="AIzaSy..."
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-900 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="px-3 py-1.5 bg-slate-900 text-white rounded-lg font-medium"
+                >
+                  ОК
+                </button>
               </div>
-            </div>
-          ))}
-          {isProcessing && (
-            <div className="flex justify-start">
-              <div className="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-[11px] flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 animate-spin text-slate-700" /> Идет обработка...
-              </div>
-            </div>
+            </form>
           )}
-          <div ref={messagesEndRef} />
-        </div>
 
-        {/* Preset Prompt Chips */}
-        <div className="px-2.5 py-1.5 bg-slate-50 border-t border-slate-100 flex items-center gap-1 overflow-x-auto text-[10px]">
-          <button
-            onClick={() => handleSendMessage("Отмени физику в пятницу")}
-            className="px-2 py-0.5 rounded bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
-          >
-            Отмени физику
-          </button>
-          <button
-            onClick={() => handleSendMessage("Перенеси английский в четверг на 15:00")}
-            className="px-2 py-0.5 rounded bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
-          >
-            Перенеси английский на 15:00
-          </button>
-          <button
-            onClick={() => handleSendMessage("Добавь теннис в среду в 17:00")}
-            className="px-2 py-0.5 rounded bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
-          >
-            Добавь теннис
-          </button>
-        </div>
+          {/* Messages Body */}
+          <div className="flex-1 p-3 overflow-y-auto space-y-2 bg-white no-scrollbar">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                <div
+                  className={`max-w-[88%] p-3 sm:p-2.5 rounded-xl whitespace-pre-line text-xs ${
+                    msg.sender === 'user'
+                      ? 'bg-slate-900 text-white'
+                      : msg.sender === 'system'
+                      ? 'bg-slate-100 border border-slate-200 text-slate-800'
+                      : 'bg-slate-100 text-slate-800 border border-slate-200'
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </div>
+            ))}
+            {isProcessing && (
+              <div className="flex justify-start">
+                <div className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-500 text-[11px] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 animate-spin text-slate-700" /> Идет обработка...
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
-        {/* Input Bar */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSendMessage();
-          }}
-          className="p-2 bg-slate-50 border-t border-slate-200 flex items-center gap-1.5"
-        >
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Введите команду..."
-            className="flex-1 px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-800 transition-colors"
-          />
-          <button
-            type="submit"
-            disabled={!inputText.trim() || isProcessing}
-            className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white transition-colors"
+          {/* Preset Prompt Chips */}
+          <div className="px-3 py-2 bg-slate-50 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto text-[11px] sm:text-[10px] shrink-0 no-scrollbar">
+            <button
+              onClick={() => handleSendMessage("Отмени физику в пятницу")}
+              className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
+            >
+              Отмени физику
+            </button>
+            <button
+              onClick={() => handleSendMessage("Перенеси английский в четверг на 15:00")}
+              className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
+            >
+              Перенеси английский на 15:00
+            </button>
+            <button
+              onClick={() => handleSendMessage("Добавь теннис в среду в 17:00")}
+              className="px-2.5 py-1 rounded-lg bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 shrink-0 transition-colors"
+            >
+              Добавь теннис
+            </button>
+          </div>
+
+          {/* Input Bar */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSendMessage();
+            }}
+            className="p-2.5 sm:p-2 bg-slate-50 border-t border-slate-200 flex items-center gap-2 shrink-0"
           >
-            <Send className="w-3.5 h-3.5" />
-          </button>
-        </form>
-      </motion.div>
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Введите команду..."
+              className="flex-1 px-3 py-2 sm:py-1.5 rounded-xl bg-white border border-slate-300 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-800 transition-colors text-xs sm:text-xs"
+            />
+            <button
+              type="submit"
+              disabled={!inputText.trim() || isProcessing}
+              className="p-2 sm:p-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white transition-colors"
+            >
+              <Send className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            </button>
+          </form>
+        </motion.div>
+      </div>
     </AnimatePresence>
   );
 }

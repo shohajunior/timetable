@@ -87,36 +87,36 @@ export function DayView({
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden space-y-2">
+    <div className="flex flex-col h-full overflow-hidden space-y-1.5 sm:space-y-2">
       {/* Subheader with Live Status Bar */}
-      <div className="flex flex-wrap items-center justify-between px-3 py-1.5 rounded-lg bg-white border border-slate-200 shrink-0 text-xs gap-2">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Calendar className="w-4 h-4 text-slate-700" />
+      <div className="flex flex-wrap items-center justify-between px-2.5 sm:px-3 py-1.5 rounded-lg bg-white border border-slate-200 shrink-0 text-[11px] sm:text-xs gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Calendar className="w-3.5 h-3.5 text-slate-700 shrink-0" />
           <span className="font-bold text-slate-900">{dayObj.name}</span>
           <span className="text-slate-400">•</span>
-          <span className="text-slate-600 font-medium">{currentParity.toUpperCase()} неделя</span>
+          <span className="text-slate-600 font-medium">{currentParity.toUpperCase()} нед</span>
 
           {/* LIVE STATUS BANNER */}
           {isToday && currentActiveLesson && (
-            <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold flex items-center gap-1 border border-emerald-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold flex items-center gap-1 border border-emerald-200 text-[10px] sm:text-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               Идёт: {currentActiveLesson.lesson.title} ({currentActiveLesson.status.badgeText})
             </span>
           )}
 
           {isToday && !currentActiveLesson && nextUpcomingLesson && (
-            <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold flex items-center gap-1 border border-amber-200">
-              <span className="w-2 h-2 rounded-full bg-amber-500"></span>
-              Перемена • след: {nextUpcomingLesson.lesson.title} ({nextUpcomingLesson.status.badgeText})
+            <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-bold flex items-center gap-1 border border-amber-200 text-[10px] sm:text-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+              След: {nextUpcomingLesson.lesson.title} ({nextUpcomingLesson.status.badgeText})
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-slate-500 font-medium">Занятий: <strong className="text-slate-900">{dayLessons.length}</strong></span>
+        <div className="flex items-center gap-2 ml-auto sm:ml-0">
+          <span className="text-slate-500 font-medium hidden xs:inline">Занятий: <strong className="text-slate-900">{dayLessons.length}</strong></span>
           <button
             onClick={() => onAddAtTime('18:00', selectedDayOfWeek)}
-            className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-1 transition-colors"
+            className="px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[11px] sm:text-xs flex items-center gap-1 transition-colors"
           >
             <Plus className="w-3 h-3" /> Добавить
           </button>
@@ -124,17 +124,17 @@ export function DayView({
       </div>
 
       {/* Timeline List */}
-      <div className="flex-1 rounded-xl bg-white border border-slate-200 p-2.5 overflow-y-auto space-y-1.5 text-xs">
+      <div className="flex-1 rounded-xl bg-white border border-slate-200 p-2 sm:p-2.5 overflow-y-auto space-y-1.5 text-xs">
         {timelineItems.map((item) => {
           if (item.type === 'lesson') {
             const { lesson } = item;
             const liveStatus = isToday ? getLessonLiveStatus(lesson, nowMinutes) : null;
 
             return (
-              <div key={item.id} className="flex items-center gap-2 py-0.5 border-b border-slate-100 last:border-0">
+              <div key={item.id} className="flex items-center gap-1.5 sm:gap-2 py-0.5 border-b border-slate-100 last:border-0">
                 {/* Start Time Column */}
-                <div className="w-14 shrink-0 font-mono text-[11px] font-bold text-slate-700 flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-slate-400" />
+                <div className="w-11 sm:w-14 shrink-0 font-mono text-[10px] sm:text-[11px] font-bold text-slate-700 flex items-center gap-0.5">
+                  <Clock className="w-3 h-3 text-slate-400 hidden xs:inline" />
                   <span>{lesson.startTime}</span>
                 </div>
 
@@ -153,11 +153,11 @@ export function DayView({
               <div
                 key={item.id}
                 onClick={() => onAddAtTime(item.startTime, selectedDayOfWeek)}
-                className="flex items-center justify-between px-2.5 py-1 rounded border border-dashed border-slate-200 hover:border-slate-300 hover:bg-slate-50 cursor-pointer text-[11px] text-slate-400 transition-colors group"
+                className="flex items-center justify-between px-2 sm:px-2.5 py-1 rounded border border-dashed border-slate-200 hover:border-slate-300 hover:bg-slate-50 cursor-pointer text-[10px] sm:text-[11px] text-slate-400 transition-colors group"
               >
-                <span className="font-mono">{item.startTime} – {item.endTime} (Свободное окно)</span>
-                <span className="font-semibold text-slate-600 opacity-0 group-hover:opacity-100 flex items-center gap-0.5">
-                  <Plus className="w-3 h-3" /> Запланировать
+                <span className="font-mono truncate">{item.startTime} – {item.endTime} (Свободно)</span>
+                <span className="font-semibold text-slate-600 sm:opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-1">
+                  <Plus className="w-3 h-3" /> <span className="hidden sm:inline">Запланировать</span>
                 </span>
               </div>
             );

@@ -14,7 +14,6 @@ import { Header } from './components/Header';
 import { DayView } from './components/DayView';
 import { WeekView } from './components/WeekView';
 import { ActivityModal } from './components/ActivityModal';
-import { GeminiChatWidget } from './components/GeminiChatWidget';
 import { getCurrentTimeMinutes } from './utils/timeStatus';
 import { Sparkles } from 'lucide-react';
 
@@ -52,9 +51,6 @@ export default function App() {
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
-
-  // Gemini AI Assistant Chat state
-  const [isGeminiOpen, setIsGeminiOpen] = useState(false);
 
   // Notification Toast state
   const [toastMessage, setToastMessage] = useState(null);
@@ -127,14 +123,6 @@ export default function App() {
     showToast(`Удалено: "${target?.title || ''}"`);
   };
 
-  const handleResetData = () => {
-    if (confirm('Сбросить расписание к базовому 10-Б?')) {
-      const defaults = resetLessonsToDefault();
-      setLessons(defaults);
-      showToast('Расписание сброшено');
-    }
-  };
-
   // Open Modal helpers
   const handleOpenAddModal = () => {
     setEditingLesson(null);
@@ -169,9 +157,9 @@ export default function App() {
   };
 
   return (
-    <div className="h-screen max-h-screen bg-slate-50 text-slate-900 flex flex-col overflow-hidden selection:bg-slate-900 selection:text-white">
+    <div className="h-[100dvh] max-h-[100dvh] w-full bg-slate-50 text-slate-900 flex flex-col overflow-hidden selection:bg-slate-900 selection:text-white">
       
-      {/* Header (Navbar without AI button) */}
+      {/* Header */}
       <Header
         currentDate={currentDate}
         currentWeekNumber={currentWeekNumber}
@@ -184,11 +172,10 @@ export default function App() {
         onNextWeek={handleNextWeek}
         onResetWeek={handleResetWeek}
         onOpenAddModal={handleOpenAddModal}
-        onResetData={handleResetData}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 w-full px-2 sm:px-4 py-2 overflow-hidden flex flex-col">
+      <main className="flex-1 w-full px-2 sm:px-4 py-1.5 sm:py-2 overflow-hidden flex flex-col min-h-0">
         {viewMode === 'day' ? (
           <DayView
             lessons={lessons}
@@ -219,34 +206,6 @@ export default function App() {
         onDelete={handleDeleteLesson}
         initialLesson={editingLesson}
         existingLessons={lessons}
-        currentParity={currentParity}
-      />
-
-      {/* DRAGGABLE & MOVABLE FLOATING GEMINI AI BUTTON */}
-      {!isGeminiOpen && (
-        <motion.button
-          drag
-          dragMomentum={false}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsGeminiOpen(true)}
-          className="fixed bottom-6 right-6 z-50 p-3 rounded-full bg-slate-900 text-white shadow-xl hover:bg-slate-800 cursor-grab active:cursor-grabbing flex items-center justify-center border border-slate-700"
-          title="Перетащите иконку AI в любое место экрана"
-        >
-          <Sparkles className="w-5 h-5 text-white pointer-events-none" />
-        </motion.button>
-      )}
-
-      {/* Gemini Chat Drawer */}
-      <GeminiChatWidget
-        isOpen={isGeminiOpen}
-        onClose={() => setIsGeminiOpen(false)}
-        lessons={lessons}
-        onAddActivity={handleSaveLesson}
-        onUpdateActivity={(id, patch) => {
-          setLessons(prev => prev.map(l => l.id === id ? { ...l, ...patch } : l));
-        }}
-        onDeleteActivity={handleDeleteLesson}
         currentParity={currentParity}
       />
 

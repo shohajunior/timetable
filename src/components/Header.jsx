@@ -24,7 +24,9 @@ export function Header({
   onResetWeek,
   onOpenAddModal,
   userProfile,
-  onOpenAuthModal
+  onOpenAuthModal,
+  activeGroup = 1,
+  onToggleGroup
 }) {
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs shrink-0">
@@ -42,10 +44,16 @@ export function Header({
                 <h1 className="text-sm sm:text-base font-bold tracking-tight text-slate-900 leading-tight">
                   Расписание 10-Б
                 </h1>
-                <span className="px-1.5 py-0.2 text-[9px] sm:text-[10px] font-semibold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={onToggleGroup}
+                  className="px-2 py-0.5 text-[10px] sm:text-[11px] font-bold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 shrink-0 flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
+                  title="Нажмите, чтобы переключить расписание между 1 и 2 группой"
+                >
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  1 группа • Облако
-                </span>
+                  <span>{activeGroup} группа</span>
+                  <span className="text-[9px] text-emerald-600 font-semibold opacity-75">⇄</span>
+                </button>
               </div>
               <p className="text-[10px] sm:text-[11px] text-slate-500 hidden xs:block">
                 Школа 10-Б & New Uzbekistan
@@ -59,16 +67,23 @@ export function Header({
               onClick={onOpenAuthModal}
               className={`px-2.5 py-1 rounded-xl border flex items-center gap-1.5 text-xs font-semibold transition-all ${
                 userProfile && !userProfile.isGuest
-                  ? 'bg-indigo-50 border-indigo-200 text-indigo-900 hover:bg-indigo-100'
-                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                  ? 'bg-slate-50 border-slate-200 text-slate-900 hover:bg-slate-100 shadow-2xs'
+                  : 'bg-amber-50 border-amber-200 text-amber-900 hover:bg-amber-100'
               }`}
               title="Настройки личного профиля"
             >
-              <div className={`w-5 h-5 rounded-full ${userProfile?.isGuest ? 'bg-slate-300' : 'bg-indigo-600'} text-white flex items-center justify-center text-[10px] font-bold shrink-0`}>
-                {userProfile?.name ? userProfile.name[0].toUpperCase() : <User className="w-3 h-3" />}
+              <div className={`w-5 h-5 rounded-full ${
+                userProfile?.color === 'emerald' ? 'bg-emerald-600' :
+                userProfile?.color === 'purple' ? 'bg-purple-600' :
+                userProfile?.color === 'amber' ? 'bg-amber-600' :
+                userProfile?.color === 'rose' ? 'bg-rose-600' :
+                userProfile?.color === 'cyan' ? 'bg-cyan-600' :
+                userProfile?.color === 'slate' ? 'bg-slate-800' : 'bg-indigo-600'
+              } text-white flex items-center justify-center text-[10px] font-bold shrink-0 shadow-xs`}>
+                {userProfile && !userProfile.isGuest && userProfile.name ? userProfile.name[0].toUpperCase() : <User className="w-3 h-3" />}
               </div>
-              <span className="max-w-[80px] sm:max-w-[120px] truncate text-[11px] sm:text-xs">
-                {userProfile?.name || 'Войти'}
+              <span className="max-w-[90px] sm:max-w-[130px] truncate text-[11px] sm:text-xs font-bold">
+                {userProfile && !userProfile.isGuest ? `${userProfile.name} (${userProfile.group || 1} гр)` : 'Войти'}
               </span>
             </button>
 

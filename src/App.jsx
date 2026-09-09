@@ -14,11 +14,13 @@ import {
   getWeekParity 
 } from './utils/parity';
 import { 
-  subscribeToCloudHomework, 
-  syncHomeworkToCloud, 
-  subscribeToCloudLessons, 
-  syncLessonsToCloud 
-} from './services/firebase';
+  subscribeToCloudData, 
+  fetchCloudData,
+  saveCloudHomework, 
+  saveCloudLessons, 
+  saveCloudPersonalLessons, 
+  saveCloudUserProfile 
+} from './services/cloudDb';
 import { Header } from './components/Header';
 import { DayView } from './components/DayView';
 import { WeekView } from './components/WeekView';
@@ -35,10 +37,37 @@ function getDayOfWeekNumber(d) {
 }
 
 export default function App() {
-  // Initial State Initialization
-  const [lessons, setLessons] = useState(() => loadLessonsFromStorage());
-  const [homeworkList, setHomeworkList] = useState(() => loadHomeworkFromStorage());
+  // User Profile state
   const [userProfile, setUserProfile] = useState(() => loadUserProfile());
+  const [cloudUsers, setCloudUsers] = useState({});
+
+  // Onboarding flag: prompt immediately if user has no profile or name
+  const [isOnboarding, setIsOnboarding] = useState(() => {
+    const p = loadUserProfile();
+    return !p || p.isGuest || !p.name;
+  });
+
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(() => {
+    const p = loadUserProfile();
+    return !p || p.isGuest || !p.name;
+  });
+
+  // Active viewing group: defaults to user profile group or 1
+  const [activeGroup, setActiveGroup] = useState(() => {
+    const p = loadUserProfile();
+    return Number(p?.group) || 1;
+  });
+
+  // Align activeGroup with profile group
+  useEffect(() => {
+    if (userProfile?.group) {
+      setActiveGroup(Number(userProfile.group));
+    }
+  }, [userProfile?.group]);
+
+  // Schedule Lessons & Homework
+  const [lessons, setLessons] = useState(() => loadLessonsFromStorage(userProfile?.group || 1));
+  const [homeworkList, setHomeworkList] = useState(() => loadHomeworkFromStorage());
 
   // Dynamic Current Date: default to real current date
   const [currentDate, setCurrentDate] = useState(() => new Date());
@@ -62,42 +91,95 @@ export default function App() {
     return () => clearInterval(interval);
   }, [currentDate]);
 
-  // Real-time Cloud DB Subscriptions across devices
+  // Real-time Cloud DB Synchronization across all devices
   useEffect(() => {
-    const unsubHomework = subscribeToCloudHomework((cloudHomework) => {
-      if (cloudHomework && Array.isArray(cloudHomework)) {
-        setHomeworkList(cloudHomework);
-        saveHomeworkToStorage(cloudHomework);
-      }
-    });
+    const unsubscribe = subscribeToCloudData((cloudData) => {
+      if (!cloudData) return;
 
-    const unsubLessons = subscribeToCloudLessons((cloudLessons) => {
-      if (cloudLessons && Array.isArray(cloudLessons) && cloudLessons.length > 0) {
-        setLessons(cloudLessons);
-        saveLessonsToStorage(cloudLessons);
+      // 0. Update Registered Cloud Users List
+      if (cloudData.users) {
+        setCloudUsers(cloudData.users);
+      }
+
+      // 1. Sync Shared Lessons for Active Group + Current User Personal Lessons from Cloud
+      const groupKey = activeGroup === 2 ? 'group2_lessons' : 'group1_lessons';
+      const sharedLessons = cloudData[groupKey];
+
+      if (Array.isArray(sharedLessons) && sharedLessons.length > 0) {
+        const currentUserId = userProfile?.id;
+        const userPersonalLessons = (currentUserId && cloudData.personal_lessons?.[currentUserId]) || [];
+
+        // Combine shared lessons and current user personal lessons
+        const combined = [...sharedLessons, ...userPersonalLessons];
+        setLessons(combined);
+        saveLessonsToStorage(combined, activeGroup);
+      }
+
+      // 2. Sync Shared Homework from Cloud
+      if (Array.isArray(cloudData.group1_homework)) {
+        setHomeworkList(cloudData.group1_homework);
+        saveHomeworkToStorage(cloudData.group1_homework);
+      }
+
+      // 3. Sync User Profile if registered or updated on another computer
+      if (userProfile?.id && cloudData.users?.[userProfile.id]) {
+        const remoteUser = cloudData.users[userProfile.id];
+        if (
+          remoteUser.group !== userProfile.group || 
+          remoteUser.color !== userProfile.color || 
+          remoteUser.password !== userProfile.password ||
+          remoteUser.name !== userProfile.name
+        ) {
+          const updated = { ...userProfile, ...remoteUser };
+          setUserProfile(updated);
+          saveUserProfile(updated);
+        }
       }
     });
 
     return () => {
-      if (typeof unsubHomework === 'function') unsubHomework();
-      if (typeof unsubLessons === 'function') unsubLessons();
+      if (typeof unsubscribe === 'function') unsubscribe();
     };
-  }, []);
+  }, [userProfile?.id, activeGroup]);
+
+  // When activeGroup changes, immediately update lessons view
+  useEffect(() => {
+    const localLessons = loadLessonsFromStorage(activeGroup);
+    const userPersonal = (userProfile?.id && localLessons.filter(l => l.type === 'personal' && l.userId === userProfile.id)) || [];
+    const sharedOnly = localLessons.filter(l => l.type !== 'personal');
+    setLessons([...sharedOnly, ...userPersonal]);
+
+    fetchCloudData().then(cloudData => {
+      if (!cloudData) return;
+      const groupKey = activeGroup === 2 ? 'group2_lessons' : 'group1_lessons';
+      const shared = cloudData[groupKey];
+      if (Array.isArray(shared) && shared.length > 0) {
+        const cloudPersonal = (userProfile?.id && cloudData.personal_lessons?.[userProfile.id]) || [];
+        const combined = [...shared, ...cloudPersonal];
+        setLessons(combined);
+        saveLessonsToStorage(combined, activeGroup);
+      }
+    });
+  }, [activeGroup, userProfile?.id]);
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAddHomeworkOpen, setIsAddHomeworkOpen] = useState(false);
 
   // Notification Toast state
   const [toastMessage, setToastMessage] = useState(null);
 
-  // Auto-save userProfile to localStorage
+  // Auto-save userProfile to local storage
   useEffect(() => {
-    saveUserProfile(userProfile);
+    if (userProfile) {
+      saveUserProfile(userProfile);
+    }
   }, [userProfile]);
 
+  // Filter lessons for Privacy Scoping:
+  // Shared lessons ('school', 'new_uzbekistan') are visible to EVERYONE.
+  // Personal lessons ('personal') are visible ONLY to the owner account!
   const visibleLessons = useMemo(() => {
     return lessons.filter(lesson => {
       if (lesson.type !== 'personal') return true;
@@ -141,7 +223,7 @@ export default function App() {
     showToast('Сброшено на сегодняшний день');
   };
 
-  // CRUD Handlers for Schedule Lessons
+  // CRUD Handlers for Schedule Lessons (Syncs to Cloud DB)
   const handleSaveLesson = (lessonData) => {
     let updatedLessons = [];
     if (Array.isArray(lessonData)) {
@@ -172,8 +254,19 @@ export default function App() {
       showToast(`Добавлено: "${lessonData.title}"`);
     }
 
+    // Sync to Cloud DB:
     setTimeout(() => {
-      syncLessonsToCloud(updatedLessons.length > 0 ? updatedLessons : lessons);
+      const finalLessons = updatedLessons.length > 0 ? updatedLessons : lessons;
+      saveLessonsToStorage(finalLessons, activeGroup);
+
+      // Separate shared vs personal
+      const shared = finalLessons.filter(l => l.type !== 'personal');
+      saveCloudLessons(shared, activeGroup);
+
+      if (userProfile?.id) {
+        const userPersonal = finalLessons.filter(l => l.type === 'personal' && l.userId === userProfile.id);
+        saveCloudPersonalLessons(userProfile.id, userPersonal);
+      }
     }, 100);
   };
 
@@ -181,16 +274,25 @@ export default function App() {
     const target = lessons.find(l => l.id === id);
     const updated = lessons.filter(l => l.id !== id);
     setLessons(updated);
-    syncLessonsToCloud(updated);
+    saveLessonsToStorage(updated, activeGroup);
+
+    const shared = updated.filter(l => l.type !== 'personal');
+    saveCloudLessons(shared, activeGroup);
+
+    if (userProfile?.id) {
+      const userPersonal = updated.filter(l => l.type === 'personal' && l.userId === userProfile.id);
+      saveCloudPersonalLessons(userProfile.id, userPersonal);
+    }
+
     showToast(`Удалено: "${target?.title || ''}"`);
   };
 
-  // CRUD Handlers for Homework
+  // CRUD Handlers for Homework (Syncs to Cloud DB)
   const handleAddHomework = (newHw) => {
     const updated = [newHw, ...homeworkList];
     setHomeworkList(updated);
     saveHomeworkToStorage(updated);
-    syncHomeworkToCloud(updated);
+    saveCloudHomework(updated);
     confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
     showToast(`ДЗ по предм. "${newHw.subject}" опубликовано в облаке! ☁️`);
   };
@@ -208,7 +310,7 @@ export default function App() {
     });
     setHomeworkList(updated);
     saveHomeworkToStorage(updated);
-    syncHomeworkToCloud(updated);
+    saveCloudHomework(updated);
   };
 
   const handleDeleteHomework = (id) => {
@@ -216,8 +318,45 @@ export default function App() {
     const updated = homeworkList.filter(i => i.id !== id);
     setHomeworkList(updated);
     saveHomeworkToStorage(updated);
-    syncHomeworkToCloud(updated);
+    saveCloudHomework(updated);
     showToast(`Удалено ДЗ по "${target?.subject || ''}"`);
+  };
+
+  // Profile Save / Login Handler
+  const handleSaveProfile = async (prof) => {
+    setUserProfile(prof);
+    saveUserProfile(prof);
+    const targetGroup = Number(prof.group) || 1;
+    setActiveGroup(targetGroup);
+    setIsOnboarding(false);
+    setIsAuthModalOpen(false);
+    showToast(`Добро пожаловать, ${prof.name}! (${targetGroup} группа) 🎉`);
+
+    // Sync user profile to Cloud DB
+    await saveCloudUserProfile(prof);
+
+    // Fetch and restore this user's group lessons and personal lessons immediately
+    try {
+      const cloudData = await fetchCloudData();
+      if (cloudData) {
+        if (cloudData.users) setCloudUsers(cloudData.users);
+        const groupKey = targetGroup === 2 ? 'group2_lessons' : 'group1_lessons';
+        const sharedLessons = cloudData[groupKey] || [];
+        const userPersonalLessons = (prof.id && cloudData.personal_lessons?.[prof.id]) || [];
+        const combined = [...sharedLessons, ...userPersonalLessons];
+        setLessons(combined);
+        saveLessonsToStorage(combined, targetGroup);
+      }
+    } catch (e) {
+      console.warn('Could not immediately pull personal lessons:', e);
+    }
+  };
+
+  // Quick toggle between viewing 1 and 2 group
+  const handleToggleGroup = () => {
+    const nextGroup = activeGroup === 1 ? 2 : 1;
+    setActiveGroup(nextGroup);
+    showToast(`Переключено на расписание: ${nextGroup} группа 📚`);
   };
 
   // Open Modal helpers
@@ -275,7 +414,12 @@ export default function App() {
         onResetWeek={handleResetWeek}
         onOpenAddModal={handleOpenAddModal}
         userProfile={userProfile}
-        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        activeGroup={activeGroup}
+        onToggleGroup={handleToggleGroup}
+        onOpenAuthModal={() => {
+          setIsOnboarding(false);
+          setIsAuthModalOpen(true);
+        }}
       />
 
       {/* Main Content Area */}
@@ -334,15 +478,14 @@ export default function App() {
         userProfile={userProfile}
       />
 
-      {/* Auth / User Profile Modal */}
+      {/* Auth / Onboarding Modal (Opens immediately on start if user has no profile) */}
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
+        onClose={isOnboarding ? null : () => setIsAuthModalOpen(false)}
         currentProfile={userProfile}
-        onSaveProfile={(prof) => {
-          setUserProfile(prof);
-          showToast(`Добро пожаловать, ${prof.name}!`);
-        }}
+        onSaveProfile={handleSaveProfile}
+        isOnboarding={isOnboarding}
+        cloudUsers={cloudUsers}
       />
 
       {/* Floating Notification Toast */}

@@ -328,3 +328,342 @@ export const INITIAL_LESSONS = [
     periodicity: "toq_only"
   }
 ];
+
+export const INITIAL_LESSONS_GROUP1 = INITIAL_LESSONS;
+
+// РАСПИСАНИЕ 2 ГРУППЫ (10-B/2 sinf dars jadvali) + New Uzbekistan
+export const INITIAL_LESSONS_GROUP2 = [
+  // ПОНЕДЕЛЬНИК (dayOfWeek: 1)
+  {
+    id: "sch-g2-mon-1",
+    title: "Кл. час",
+    type: "school",
+    dayOfWeek: 1,
+    startTime: "08:30",
+    endTime: "09:15",
+    location: "Школа (10-Б)",
+    teacher: "Аманкулов С.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-mon-2",
+    title: "Новый Узбекистан",
+    type: "school",
+    dayOfWeek: 1,
+    startTime: "09:20",
+    endTime: "10:05",
+    location: "Школа (10-Б)",
+    teacher: "",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-mon-3",
+    title: "Новый Узбекистан",
+    type: "school",
+    dayOfWeek: 1,
+    startTime: "10:10",
+    endTime: "10:55",
+    location: "Школа (10-Б)",
+    teacher: "",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-mon-4",
+    title: "Узбекский язык",
+    type: "school",
+    dayOfWeek: 1,
+    startTime: "11:00",
+    endTime: "11:45",
+    location: "Школа (10-Б)",
+    teacher: "Турсунова Г.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-mon-5",
+    title: "История Узбекистана",
+    type: "school",
+    dayOfWeek: 1,
+    startTime: "12:15",
+    endTime: "13:00",
+    location: "Школа (10-Б)",
+    teacher: "Аманкулов С.",
+    periodicity: "weekly"
+  },
+  {
+    id: "nu-g2-mon-1",
+    title: "Семинар по матанализу",
+    type: "new_uzbekistan",
+    dayOfWeek: 1,
+    startTime: "13:00",
+    endTime: "14:30",
+    location: "каб. 1-08",
+    teacher: "Университет New Uzbekistan",
+    periodicity: "weekly"
+  },
+
+  // ВТОРНИК (dayOfWeek: 2)
+  {
+    id: "sch-g2-tue-1",
+    title: "Физкультура",
+    type: "school",
+    dayOfWeek: 2,
+    startTime: "08:30",
+    endTime: "09:15",
+    location: "Школа (10-Б)",
+    teacher: "Наимжонова Г.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-tue-2",
+    title: "Информатика",
+    type: "school",
+    dayOfWeek: 2,
+    startTime: "09:20",
+    endTime: "10:05",
+    location: "Школа (10-Б)",
+    teacher: "Фатхуллаева М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-tue-3",
+    title: "Алгебра",
+    type: "school",
+    dayOfWeek: 2,
+    startTime: "10:10",
+    endTime: "10:55",
+    location: "Школа (10-Б)",
+    teacher: "Раббимов Ж.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-tue-4",
+    title: "Воспитание",
+    type: "school",
+    dayOfWeek: 2,
+    startTime: "11:00",
+    endTime: "11:45",
+    location: "Школа (10-Б)",
+    teacher: "Аманкулов С.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-tue-5",
+    title: "Литература",
+    type: "school",
+    dayOfWeek: 2,
+    startTime: "12:15",
+    endTime: "13:00",
+    location: "Школа (10-Б)",
+    teacher: "Шералиева М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "nu-g2-tue-1",
+    title: "Семинар по информатике",
+    type: "new_uzbekistan",
+    dayOfWeek: 2,
+    startTime: "14:35",
+    endTime: "16:00",
+    location: "каб. 2-01",
+    teacher: "Университет New Uzbekistan",
+    periodicity: "toq_only"
+  },
+
+  // СРЕДА (dayOfWeek: 3)
+  {
+    id: "sch-g2-wed-1",
+    title: "НВП",
+    type: "school",
+    dayOfWeek: 3,
+    startTime: "08:30",
+    endTime: "09:15",
+    location: "Школа (10-Б)",
+    teacher: "Якубов А.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-wed-2",
+    title: "Физика",
+    type: "school",
+    dayOfWeek: 3,
+    startTime: "09:20",
+    endTime: "10:05",
+    location: "Школа (10-Б)",
+    teacher: "Назиров Х.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-wed-3",
+    title: "Информатика",
+    type: "school",
+    dayOfWeek: 3,
+    startTime: "10:10",
+    endTime: "10:55",
+    location: "Школа (10-Б)",
+    teacher: "Фатхуллаева М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-wed-4",
+    title: "Английский язык",
+    type: "school",
+    dayOfWeek: 3,
+    startTime: "11:00",
+    endTime: "11:45",
+    location: "Школа (10-Б)",
+    teacher: "Исматова М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-wed-5",
+    title: "Родной язык",
+    type: "school",
+    dayOfWeek: 3,
+    startTime: "12:15",
+    endTime: "13:00",
+    location: "Школа (10-Б)",
+    teacher: "Шералиева М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "nu-g2-wed-1",
+    title: "Лабораторная по физике",
+    type: "new_uzbekistan",
+    dayOfWeek: 3,
+    startTime: "14:00",
+    endTime: "16:00",
+    location: "В университете",
+    teacher: "Университет New Uzbekistan",
+    periodicity: "toq_only"
+  },
+
+  // ЧЕТВЕРГ (dayOfWeek: 4)
+  {
+    id: "sch-g2-thu-1",
+    title: "Геометрия",
+    type: "school",
+    dayOfWeek: 4,
+    startTime: "08:30",
+    endTime: "09:15",
+    location: "Школа (10-Б)",
+    teacher: "Елова Н.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-thu-2",
+    title: "Родной язык",
+    type: "school",
+    dayOfWeek: 4,
+    startTime: "09:20",
+    endTime: "10:05",
+    location: "Школа (10-Б)",
+    teacher: "Шералиева М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-thu-3",
+    title: "Всемирная история",
+    type: "school",
+    dayOfWeek: 4,
+    startTime: "10:10",
+    endTime: "10:55",
+    location: "Школа (10-Б)",
+    teacher: "Аманкулов С.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-thu-4",
+    title: "Алгебра",
+    type: "school",
+    dayOfWeek: 4,
+    startTime: "11:00",
+    endTime: "11:45",
+    location: "Школа (10-Б)",
+    teacher: "Раббимов Ж.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-thu-5",
+    title: "НВП",
+    type: "school",
+    dayOfWeek: 4,
+    startTime: "12:15",
+    endTime: "13:00",
+    location: "Школа (10-Б)",
+    teacher: "Якубов А.",
+    periodicity: "weekly"
+  },
+  {
+    id: "nu-g2-thu-1",
+    title: "Английский язык (Унив)",
+    type: "new_uzbekistan",
+    dayOfWeek: 4,
+    startTime: "14:35",
+    endTime: "16:00",
+    location: "каб. 1-08",
+    teacher: "Университет New Uzbekistan",
+    periodicity: "weekly"
+  },
+
+  // ПЯТНИЦА (dayOfWeek: 5)
+  {
+    id: "sch-g2-fri-1",
+    title: "Физика",
+    type: "school",
+    dayOfWeek: 5,
+    startTime: "08:30",
+    endTime: "09:15",
+    location: "Школа (10-Б)",
+    teacher: "Назиров Х.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-fri-2",
+    title: "Узбекский язык",
+    type: "school",
+    dayOfWeek: 5,
+    startTime: "09:20",
+    endTime: "10:05",
+    location: "Школа (10-Б)",
+    teacher: "Турсунова Г.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-fri-3",
+    title: "История Узбекистана",
+    type: "school",
+    dayOfWeek: 5,
+    startTime: "10:10",
+    endTime: "10:55",
+    location: "Школа (10-Б)",
+    teacher: "Аманкулов С.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-fri-4",
+    title: "Английский язык",
+    type: "school",
+    dayOfWeek: 5,
+    startTime: "11:00",
+    endTime: "11:45",
+    location: "Школа (10-Б)",
+    teacher: "Исматова М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "nu-g2-fri-1",
+    title: "Семинар по физике",
+    type: "new_uzbekistan",
+    dayOfWeek: 5,
+    startTime: "16:00",
+    endTime: "17:30",
+    location: "каб. 1-08",
+    teacher: "Университет New Uzbekistan",
+    periodicity: "toq_only"
+  }
+];
+
+export function getInitialLessonsForGroup(groupNumber = 1) {
+  return Number(groupNumber) === 2 ? INITIAL_LESSONS_GROUP2 : INITIAL_LESSONS_GROUP1;
+}
+

@@ -1,6 +1,6 @@
-import { INITIAL_LESSONS } from '../data/seedData';
+import { INITIAL_LESSONS, getInitialLessonsForGroup } from '../data/seedData';
 
-const STORAGE_KEY = 'school_timetable_10b_v3';
+const getStorageKeyForGroup = (g = 1) => `school_timetable_10b_v3_g${Number(g) === 2 ? 2 : 1}`;
 const HOMEWORK_STORAGE_KEY = 'school_homework_10b_v1';
 const USER_PROFILE_KEY = 'school_user_profile_10b_v1';
 
@@ -40,38 +40,40 @@ export const INITIAL_HOMEWORK = [
   }
 ];
 
-export function loadLessonsFromStorage() {
+export function loadLessonsFromStorage(groupNumber = 1) {
+  const defaultLessons = getInitialLessonsForGroup(groupNumber);
+  const key = getStorageKeyForGroup(groupNumber);
   try {
-    localStorage.removeItem('school_timetable_10b_v1');
-    localStorage.removeItem('school_timetable_10b_v2');
-
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(key);
     if (!saved) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_LESSONS));
-      return INITIAL_LESSONS;
+      localStorage.setItem(key, JSON.stringify(defaultLessons));
+      return defaultLessons;
     }
     const parsed = JSON.parse(saved);
     if (Array.isArray(parsed) && parsed.length > 0) {
       return parsed;
     }
-    return INITIAL_LESSONS;
+    return defaultLessons;
   } catch (error) {
     console.error('Failed to load lessons from localStorage:', error);
-    return INITIAL_LESSONS;
+    return defaultLessons;
   }
 }
 
-export function saveLessonsToStorage(lessons) {
+export function saveLessonsToStorage(lessons, groupNumber = 1) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(lessons));
+    const key = getStorageKeyForGroup(groupNumber);
+    localStorage.setItem(key, JSON.stringify(lessons));
   } catch (error) {
     console.error('Failed to save lessons to localStorage:', error);
   }
 }
 
-export function resetLessonsToDefault() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_LESSONS));
-  return INITIAL_LESSONS;
+export function resetLessonsToDefault(groupNumber = 1) {
+  const defaultLessons = getInitialLessonsForGroup(groupNumber);
+  const key = getStorageKeyForGroup(groupNumber);
+  localStorage.setItem(key, JSON.stringify(defaultLessons));
+  return defaultLessons;
 }
 
 export function loadHomeworkFromStorage() {
@@ -100,12 +102,11 @@ export function loadUserProfile() {
   try {
     const saved = localStorage.getItem(USER_PROFILE_KEY);
     if (!saved) {
-      const defaultUser = { id: 'user-guest', name: 'Ученик (1 группа)', isGuest: true, color: 'indigo' };
-      return defaultUser;
+      return null;
     }
     return JSON.parse(saved);
   } catch (error) {
-    return { id: 'user-guest', name: 'Ученик (1 группа)', isGuest: true, color: 'indigo' };
+    return null;
   }
 }
 

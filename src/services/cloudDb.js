@@ -16,10 +16,7 @@ let lastETag = null;
 export async function fetchCloudData() {
   try {
     const res = await fetch(CLOUD_BIN_URL, {
-      method: 'GET',
-      headers: {
-        'Cache-Control': 'no-cache'
-      }
+      method: 'GET'
     });
 
     if (res.ok) {

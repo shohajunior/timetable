@@ -13,24 +13,24 @@ export const INITIAL_LESSONS = [
   },
   {
     id: "sch-mon-2",
-    title: "Новый Узбекистан",
-    type: "school",
+    title: "Calculus (Лекция)",
+    type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "09:20",
     endTime: "10:05",
     location: "Школа (10-Б)",
-    teacher: "",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
   {
     id: "sch-mon-3",
-    title: "Новый Узбекистан",
-    type: "school",
+    title: "Calculus (Лекция)",
+    type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "10:10",
     endTime: "10:55",
     location: "Школа (10-Б)",
-    teacher: "",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
   {
@@ -42,6 +42,17 @@ export const INITIAL_LESSONS = [
     endTime: "11:45",
     location: "Школа (10-Б)",
     teacher: "Исматова М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-mon-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 1,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
     periodicity: "weekly"
   },
   {
@@ -57,7 +68,7 @@ export const INITIAL_LESSONS = [
   },
   {
     id: "nu-mon-1",
-    title: "Семинар по матанализу",
+    title: "Calculus (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "13:00",
@@ -110,6 +121,17 @@ export const INITIAL_LESSONS = [
     endTime: "11:45",
     location: "Школа (10-Б)",
     teacher: "Аманкулов С.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-tue-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 2,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
     periodicity: "weekly"
   },
   {
@@ -181,6 +203,17 @@ export const INITIAL_LESSONS = [
     periodicity: "weekly"
   },
   {
+    id: "sch-wed-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 3,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
+    periodicity: "weekly"
+  },
+  {
     id: "sch-wed-5",
     title: "Родной язык",
     type: "school",
@@ -246,6 +279,17 @@ export const INITIAL_LESSONS = [
     endTime: "11:45",
     location: "Школа (10-Б)",
     teacher: "Исматова М.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-thu-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 4,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
     periodicity: "weekly"
   },
   {
@@ -317,6 +361,17 @@ export const INITIAL_LESSONS = [
     periodicity: "weekly"
   },
   {
+    id: "sch-fri-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 5,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
+    periodicity: "weekly"
+  },
+  {
     id: "nu-fri-1",
     title: "Семинар по физике",
     type: "new_uzbekistan",
@@ -331,7 +386,7 @@ export const INITIAL_LESSONS = [
 
 export const INITIAL_LESSONS_GROUP1 = INITIAL_LESSONS;
 
-// РАСПИСАНИЕ 2 ГРУППЫ (10-B/2 sinf dars jadvali) + New Uzbekistan
+// РАСПИСАНИЕ 2 ГРУППЫ (10-B/2 sinf dars jadvali) + New Uzbekistan + Обед
 export const INITIAL_LESSONS_GROUP2 = [
   // ПОНЕДЕЛЬНИК (dayOfWeek: 1)
   {
@@ -347,24 +402,24 @@ export const INITIAL_LESSONS_GROUP2 = [
   },
   {
     id: "sch-g2-mon-2",
-    title: "Новый Узбекистан",
-    type: "school",
+    title: "Calculus (Лекция)",
+    type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "09:20",
     endTime: "10:05",
     location: "Школа (10-Б)",
-    teacher: "",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
   {
     id: "sch-g2-mon-3",
-    title: "Новый Узбекистан",
-    type: "school",
+    title: "Calculus (Лекция)",
+    type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "10:10",
     endTime: "10:55",
     location: "Школа (10-Б)",
-    teacher: "",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
   {
@@ -376,6 +431,17 @@ export const INITIAL_LESSONS_GROUP2 = [
     endTime: "11:45",
     location: "Школа (10-Б)",
     teacher: "Турсунова Г.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-mon-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 1,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
     periodicity: "weekly"
   },
   {
@@ -391,7 +457,7 @@ export const INITIAL_LESSONS_GROUP2 = [
   },
   {
     id: "nu-g2-mon-1",
-    title: "Семинар по матанализу",
+    title: "Calculus (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "13:00",
@@ -444,6 +510,17 @@ export const INITIAL_LESSONS_GROUP2 = [
     endTime: "11:45",
     location: "Школа (10-Б)",
     teacher: "Аманкулов С.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-tue-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 2,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
     periodicity: "weekly"
   },
   {
@@ -515,6 +592,17 @@ export const INITIAL_LESSONS_GROUP2 = [
     periodicity: "weekly"
   },
   {
+    id: "sch-g2-wed-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 3,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
+    periodicity: "weekly"
+  },
+  {
     id: "sch-g2-wed-5",
     title: "Родной язык",
     type: "school",
@@ -580,6 +668,17 @@ export const INITIAL_LESSONS_GROUP2 = [
     endTime: "11:45",
     location: "Школа (10-Б)",
     teacher: "Раббимов Ж.",
+    periodicity: "weekly"
+  },
+  {
+    id: "sch-g2-thu-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 4,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
     periodicity: "weekly"
   },
   {
@@ -651,6 +750,17 @@ export const INITIAL_LESSONS_GROUP2 = [
     periodicity: "weekly"
   },
   {
+    id: "sch-g2-fri-lunch",
+    title: "Обед 🥪",
+    type: "school",
+    dayOfWeek: 5,
+    startTime: "11:45",
+    endTime: "12:15",
+    location: "Столовая",
+    teacher: "",
+    periodicity: "weekly"
+  },
+  {
     id: "nu-g2-fri-1",
     title: "Семинар по физике",
     type: "new_uzbekistan",
@@ -666,4 +776,3 @@ export const INITIAL_LESSONS_GROUP2 = [
 export function getInitialLessonsForGroup(groupNumber = 1) {
   return Number(groupNumber) === 2 ? INITIAL_LESSONS_GROUP2 : INITIAL_LESSONS_GROUP1;
 }
-

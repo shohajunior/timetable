@@ -2,7 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export function ActivityCard({ lesson, onClick, compact = false, liveStatus = null }) {
-  const getTypeBadge = (type) => {
+  const getTypeBadge = (type, title = '') => {
+    if ((title && title.toLowerCase().includes('обед')) || type === 'lunch') {
+      return {
+        bg: 'bg-orange-50/70 hover:bg-orange-50',
+        border: 'border-orange-200 hover:border-orange-300',
+        tag: 'bg-orange-100 text-orange-900',
+        label: 'Обед 🥪'
+      };
+    }
     switch (type) {
       case 'school':
         return {
@@ -43,7 +51,7 @@ export function ActivityCard({ lesson, onClick, compact = false, liveStatus = nu
     }
   };
 
-  const style = getTypeBadge(lesson.type);
+  const style = getTypeBadge(lesson.type, lesson.title);
 
   // Live status highlighting styling
   let liveRing = '';

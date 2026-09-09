@@ -1,21 +1,33 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { 
   loadLessonsFromStorage, 
   saveLessonsToStorage, 
-  resetLessonsToDefault 
+  loadHomeworkFromStorage,
+  saveHomeworkToStorage,
+  loadUserProfile,
+  saveUserProfile
 } from './utils/storage';
 import { 
   getWeekNumberFromSept, 
   getWeekParity 
 } from './utils/parity';
+import { 
+  subscribeToCloudHomework, 
+  syncHomeworkToCloud, 
+  subscribeToCloudLessons, 
+  syncLessonsToCloud 
+} from './services/firebase';
 import { Header } from './components/Header';
 import { DayView } from './components/DayView';
 import { WeekView } from './components/WeekView';
 import { ActivityModal } from './components/ActivityModal';
+import { HomeworkView } from './components/HomeworkView';
+import { AddHomeworkModal } from './components/AddHomeworkModal';
+import { AuthModal } from './components/AuthModal';
 import { getCurrentTimeMinutes } from './utils/timeStatus';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Cloud } from 'lucide-react';
 
 function getDayOfWeekNumber(d) {
   const day = d.getDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
@@ -25,11 +37,13 @@ function getDayOfWeekNumber(d) {
 export default function App() {
   // Initial State Initialization
   const [lessons, setLessons] = useState(() => loadLessonsFromStorage());
+  const [homeworkList, setHomeworkList] = useState(() => loadHomeworkFromStorage());
+  const [userProfile, setUserProfile] = useState(() => loadUserProfile());
 
   // Dynamic Current Date: default to real current date
   const [currentDate, setCurrentDate] = useState(() => new Date());
 
-  const [viewMode, setViewMode] = useState('day'); // 'day' | 'week'
+  const [viewMode, setViewMode] = useState('day'); // 'day' | 'week' | 'homework'
   
   // Dynamically set selectedDayOfWeek based on current date
   const [selectedDayOfWeek, setSelectedDayOfWeek] = useState(() => getDayOfWeekNumber(new Date()));
@@ -48,17 +62,51 @@ export default function App() {
     return () => clearInterval(interval);
   }, [currentDate]);
 
+  // Real-time Cloud DB Subscriptions across devices
+  useEffect(() => {
+    const unsubHomework = subscribeToCloudHomework((cloudHomework) => {
+      if (cloudHomework && Array.isArray(cloudHomework)) {
+        setHomeworkList(cloudHomework);
+        saveHomeworkToStorage(cloudHomework);
+      }
+    });
+
+    const unsubLessons = subscribeToCloudLessons((cloudLessons) => {
+      if (cloudLessons && Array.isArray(cloudLessons) && cloudLessons.length > 0) {
+        setLessons(cloudLessons);
+        saveLessonsToStorage(cloudLessons);
+      }
+    });
+
+    return () => {
+      if (typeof unsubHomework === 'function') unsubHomework();
+      if (typeof unsubLessons === 'function') unsubLessons();
+    };
+  }, []);
+
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAddHomeworkOpen, setIsAddHomeworkOpen] = useState(false);
 
   // Notification Toast state
   const [toastMessage, setToastMessage] = useState(null);
 
-  // Auto-save lessons to localStorage
+  // Auto-save userProfile to localStorage
   useEffect(() => {
-    saveLessonsToStorage(lessons);
-  }, [lessons]);
+    saveUserProfile(userProfile);
+  }, [userProfile]);
+
+  const visibleLessons = useMemo(() => {
+    return lessons.filter(lesson => {
+      if (lesson.type !== 'personal') return true;
+      if (userProfile?.isGuest) {
+        return !lesson.userId || lesson.userId === 'user-guest';
+      }
+      return lesson.userId === userProfile?.id;
+    });
+  }, [lessons, userProfile]);
 
   // Derived parity & week number
   const currentWeekNumber = getWeekNumberFromSept(currentDate);
@@ -93,40 +141,93 @@ export default function App() {
     showToast('Сброшено на сегодняшний день');
   };
 
-  // CRUD Handlers
+  // CRUD Handlers for Schedule Lessons
   const handleSaveLesson = (lessonData) => {
+    let updatedLessons = [];
     if (Array.isArray(lessonData)) {
       setLessons(prev => {
         const idsToRemove = new Set(lessonData.map(l => l.id).filter(Boolean));
         const filtered = prev.filter(l => !idsToRemove.has(l.id));
-        return [...filtered, ...lessonData];
+        updatedLessons = [...filtered, ...lessonData];
+        return updatedLessons;
       });
       confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
       showToast(`Добавлено занятий: ${lessonData.length}`);
     } else if (lessonData.id) {
-      setLessons(prev => prev.map(l => l.id === lessonData.id ? lessonData : l));
+      setLessons(prev => {
+        updatedLessons = prev.map(l => l.id === lessonData.id ? lessonData : l);
+        return updatedLessons;
+      });
       showToast(`Предмет "${lessonData.title}" обновлен`);
     } else {
       const newLesson = {
         ...lessonData,
         id: 'user-add-' + Date.now()
       };
-      setLessons(prev => [...prev, newLesson]);
+      setLessons(prev => {
+        updatedLessons = [...prev, newLesson];
+        return updatedLessons;
+      });
       confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
       showToast(`Добавлено: "${lessonData.title}"`);
     }
+
+    setTimeout(() => {
+      syncLessonsToCloud(updatedLessons.length > 0 ? updatedLessons : lessons);
+    }, 100);
   };
 
   const handleDeleteLesson = (id) => {
     const target = lessons.find(l => l.id === id);
-    setLessons(prev => prev.filter(l => l.id !== id));
+    const updated = lessons.filter(l => l.id !== id);
+    setLessons(updated);
+    syncLessonsToCloud(updated);
     showToast(`Удалено: "${target?.title || ''}"`);
+  };
+
+  // CRUD Handlers for Homework
+  const handleAddHomework = (newHw) => {
+    const updated = [newHw, ...homeworkList];
+    setHomeworkList(updated);
+    saveHomeworkToStorage(updated);
+    syncHomeworkToCloud(updated);
+    confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+    showToast(`ДЗ по предм. "${newHw.subject}" опубликовано в облаке! ☁️`);
+  };
+
+  const handleToggleHomeworkComplete = (id) => {
+    const updated = homeworkList.map(item => {
+      if (item.id === id) {
+        const nextStatus = !item.isCompleted;
+        if (nextStatus) {
+          showToast(`Задание по "${item.subject}" выполнено! 🎉`);
+        }
+        return { ...item, isCompleted: nextStatus };
+      }
+      return item;
+    });
+    setHomeworkList(updated);
+    saveHomeworkToStorage(updated);
+    syncHomeworkToCloud(updated);
+  };
+
+  const handleDeleteHomework = (id) => {
+    const target = homeworkList.find(i => i.id === id);
+    const updated = homeworkList.filter(i => i.id !== id);
+    setHomeworkList(updated);
+    saveHomeworkToStorage(updated);
+    syncHomeworkToCloud(updated);
+    showToast(`Удалено ДЗ по "${target?.subject || ''}"`);
   };
 
   // Open Modal helpers
   const handleOpenAddModal = () => {
-    setEditingLesson(null);
-    setIsModalOpen(true);
+    if (viewMode === 'homework') {
+      setIsAddHomeworkOpen(true);
+    } else {
+      setEditingLesson(null);
+      setIsModalOpen(true);
+    }
   };
 
   const handleEditLesson = (lesson) => {
@@ -151,7 +252,8 @@ export default function App() {
       startTime: '14:00',
       endTime: '15:00',
       type: 'personal',
-      periodicity: 'weekly'
+      periodicity: 'weekly',
+      userId: userProfile?.id
     });
     setIsModalOpen(true);
   };
@@ -172,13 +274,15 @@ export default function App() {
         onNextWeek={handleNextWeek}
         onResetWeek={handleResetWeek}
         onOpenAddModal={handleOpenAddModal}
+        userProfile={userProfile}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
       />
 
       {/* Main Content Area */}
       <main className="flex-1 w-full px-2 sm:px-4 py-1.5 sm:py-2 overflow-hidden flex flex-col min-h-0">
-        {viewMode === 'day' ? (
+        {viewMode === 'day' && (
           <DayView
-            lessons={lessons}
+            lessons={visibleLessons}
             selectedDayOfWeek={selectedDayOfWeek}
             currentParity={currentParity}
             nowMinutes={nowMinutes}
@@ -186,14 +290,25 @@ export default function App() {
             onLessonClick={handleEditLesson}
             onAddAtTime={handleAddAtTime}
           />
-        ) : (
+        )}
+        {viewMode === 'week' && (
           <WeekView
-            lessons={lessons}
+            lessons={visibleLessons}
             currentParity={currentParity}
             todayDayOfWeek={todayDayOfWeek}
             nowMinutes={nowMinutes}
             onLessonClick={handleEditLesson}
             onAddAtDay={handleAddAtDay}
+          />
+        )}
+        {viewMode === 'homework' && (
+          <HomeworkView
+            homeworkList={homeworkList}
+            onAddClick={() => setIsAddHomeworkOpen(true)}
+            onToggleComplete={handleToggleHomeworkComplete}
+            onDeleteHomework={handleDeleteHomework}
+            lessons={lessons}
+            userProfile={userProfile}
           />
         )}
       </main>
@@ -207,12 +322,33 @@ export default function App() {
         initialLesson={editingLesson}
         existingLessons={lessons}
         currentParity={currentParity}
+        userProfile={userProfile}
+      />
+
+      {/* Add Homework Modal */}
+      <AddHomeworkModal
+        isOpen={isAddHomeworkOpen}
+        onClose={() => setIsAddHomeworkOpen(false)}
+        onAddHomework={handleAddHomework}
+        lessons={lessons}
+        userProfile={userProfile}
+      />
+
+      {/* Auth / User Profile Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        currentProfile={userProfile}
+        onSaveProfile={(prof) => {
+          setUserProfile(prof);
+          showToast(`Добро пожаловать, ${prof.name}!`);
+        }}
       />
 
       {/* Floating Notification Toast */}
       {toastMessage && (
-        <div className="fixed bottom-5 left-5 z-50 px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-medium shadow-md flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-slate-300" />
+        <div className="fixed bottom-5 left-5 z-50 px-3.5 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-xl flex items-center gap-2 border border-slate-700">
+          <Sparkles className="w-4 h-4 text-amber-400" />
           <span>{toastMessage}</span>
         </div>
       )}

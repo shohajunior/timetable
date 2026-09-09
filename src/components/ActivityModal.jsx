@@ -4,7 +4,7 @@ import { X, AlertTriangle, Trash2, Save, Plus, Clock, MapPin, User, Calendar, Re
 import { checkTimeCollision } from '../utils/collision';
 import { DAYS_OF_WEEK } from '../utils/parity';
 
-export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson, existingLessons, currentParity }) {
+export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson, existingLessons, currentParity, userProfile }) {
   const [formData, setFormData] = useState({
     title: '',
     type: 'school',
@@ -34,7 +34,8 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
         location: initialLesson.location || '',
         teacher: initialLesson.teacher || '',
         periodicity: initialLesson.periodicity || 'weekly',
-        specificDate: initialLesson.specificDate || ''
+        specificDate: initialLesson.specificDate || '',
+        userId: initialLesson.userId || (initialLesson.type === 'personal' ? userProfile?.id : null)
       });
       setSelectedDays([initialDay]);
     } else {
@@ -52,7 +53,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
       setSelectedDays([1]);
     }
     setValidationError(null);
-  }, [initialLesson, isOpen]);
+  }, [initialLesson, isOpen, userProfile]);
 
   // Check collision whenever form values change
   useEffect(() => {
@@ -104,13 +105,18 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
       return;
     }
 
+    const payloadBase = {
+      ...formData,
+      userId: formData.type === 'personal' ? (formData.userId || userProfile?.id || 'user-guest') : null
+    };
+
     if (formData.id) {
       if (selectedDays.length === 1) {
-        onSave({ ...formData, dayOfWeek: selectedDays[0] });
+        onSave({ ...payloadBase, dayOfWeek: selectedDays[0] });
       } else {
-        const updatedFirst = { ...formData, dayOfWeek: selectedDays[0] };
+        const updatedFirst = { ...payloadBase, dayOfWeek: selectedDays[0] };
         const newOthers = selectedDays.slice(1).map(day => ({
-          ...formData,
+          ...payloadBase,
           dayOfWeek: day,
           id: 'user-add-' + Date.now() + '-' + day
         }));
@@ -118,10 +124,10 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
       }
     } else {
       if (selectedDays.length === 1) {
-        onSave({ ...formData, dayOfWeek: selectedDays[0] });
+        onSave({ ...payloadBase, dayOfWeek: selectedDays[0] });
       } else {
         const newLessons = selectedDays.map(day => ({
-          ...formData,
+          ...payloadBase,
           dayOfWeek: day,
           id: 'user-add-' + Date.now() + '-' + day
         }));

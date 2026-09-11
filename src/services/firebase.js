@@ -9,15 +9,15 @@ import {
   update 
 } from 'firebase/database';
 
-// Public Realtime Database config for Group 1 10-B timetable
+// Realtime Database config for timetable-ba5f2
 const firebaseConfig = {
   apiKey: "AIzaSyD-Timetable10BGroup1PublicCloudKey",
-  authDomain: "timetable-10b-group1.firebaseapp.com",
-  databaseURL: "https://timetable-10b-group1-default-rtdb.firebaseio.com",
-  projectId: "timetable-10b-group1",
-  storageBucket: "timetable-10b-group1.appspot.com",
-  messagingSenderId: "1098273410",
-  appId: "1:1098273410:web:a7b8c9d0"
+  authDomain: "timetable-ba5f2.firebaseapp.com",
+  databaseURL: "https://timetable-ba5f2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "timetable-ba5f2",
+  storageBucket: "timetable-ba5f2.appspot.com",
+  messagingSenderId: "timetable-ba5f2-msg",
+  appId: "1:timetable-ba5f2:web:app"
 };
 
 let db = null;
@@ -28,18 +28,17 @@ try {
   db = getDatabase(app);
   isFirebaseConnected = true;
 } catch (error) {
-  console.warn('Firebase initialization error, fallback to cloud REST engine:', error);
+  console.warn('Firebase SDK init warning, fallback to high-speed REST:', error);
 }
 
-// Global Cloud Sync Engine via lightweight Realtime REST API fallback if WebSockets are blocked
-const CLOUD_DB_BASE = 'https://timetable-10b-group1-default-rtdb.firebaseio.com';
+const CLOUD_DB_BASE = 'https://timetable-ba5f2-default-rtdb.asia-southeast1.firebasedatabase.app';
 
 export function isCloudAvailable() {
-  return true; // Cloud backend active
+  return true;
 }
 
 /**
- * Real-time Listener for Shared Group 1 Homework
+ * Real-time Listener for Shared Homework
  */
 export function subscribeToCloudHomework(onDataChange) {
   if (db && isFirebaseConnected) {
@@ -59,7 +58,6 @@ export function subscribeToCloudHomework(onDataChange) {
     });
   }
 
-  // Cloud REST Sync fallback
   let isMounted = true;
   const pollHomework = async () => {
     try {
@@ -81,7 +79,7 @@ export function subscribeToCloudHomework(onDataChange) {
   };
 
   pollHomework();
-  const interval = setInterval(pollHomework, 4000);
+  const interval = setInterval(pollHomework, 3000);
   return () => {
     isMounted = false;
     clearInterval(interval);
@@ -93,46 +91,27 @@ export function subscribeToCloudHomework(onDataChange) {
  */
 export async function syncHomeworkToCloud(homeworkList) {
   try {
-    if (db && isFirebaseConnected) {
-      const homeworkRef = ref(db, 'group1_homework');
-      await set(homeworkRef, homeworkList);
-      return true;
-    }
-  } catch (err) {
-    console.warn('Firebase set error, trying REST:', err);
-  }
-
-  try {
-    await fetch(`${CLOUD_DB_BASE}/group1_homework.json`, {
+    const res = await fetch(`${CLOUD_DB_BASE}/group1_homework.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(homeworkList)
     });
-    return true;
+    return res.ok;
   } catch (err) {
-    console.error('Failed to sync homework to cloud:', err);
+    console.error('Failed to sync homework to Firebase:', err);
     return false;
   }
 }
 
 /**
- * Real-time Listener for Shared 10-B Lessons
+ * Real-time Listener for Shared Lessons
  */
-export function subscribeToCloudLessons(onDataChange) {
-  if (db && isFirebaseConnected) {
-    const lessonsRef = ref(db, 'group1_lessons');
-    return onValue(lessonsRef, (snapshot) => {
-      const val = snapshot.val();
-      if (val && Array.isArray(val) && val.length > 0) {
-        onDataChange(val);
-      }
-    });
-  }
-
+export function subscribeToCloudLessons(onDataChange, groupNumber = 1) {
+  const groupKey = Number(groupNumber) === 2 ? 'group2_lessons' : 'group1_lessons';
   let isMounted = true;
   const pollLessons = async () => {
     try {
-      const res = await fetch(`${CLOUD_DB_BASE}/group1_lessons.json`);
+      const res = await fetch(`${CLOUD_DB_BASE}/${groupKey}.json`);
       if (res.ok) {
         const data = await res.json();
         if (isMounted && data && Array.isArray(data) && data.length > 0) {
@@ -143,7 +122,7 @@ export function subscribeToCloudLessons(onDataChange) {
   };
 
   pollLessons();
-  const interval = setInterval(pollLessons, 5000);
+  const interval = setInterval(pollLessons, 3000);
   return () => {
     isMounted = false;
     clearInterval(interval);
@@ -153,22 +132,15 @@ export function subscribeToCloudLessons(onDataChange) {
 /**
  * Push updated Lessons schedule to Cloud DB
  */
-export async function syncLessonsToCloud(lessonsList) {
+export async function syncLessonsToCloud(lessonsList, groupNumber = 1) {
+  const groupKey = Number(groupNumber) === 2 ? 'group2_lessons' : 'group1_lessons';
   try {
-    if (db && isFirebaseConnected) {
-      const lessonsRef = ref(db, 'group1_lessons');
-      await set(lessonsRef, lessonsList);
-      return true;
-    }
-  } catch (err) {}
-
-  try {
-    await fetch(`${CLOUD_DB_BASE}/group1_lessons.json`, {
+    const res = await fetch(`${CLOUD_DB_BASE}/${groupKey}.json`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(lessonsList)
     });
-    return true;
+    return res.ok;
   } catch (err) {
     return false;
   }

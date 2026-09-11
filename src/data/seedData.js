@@ -13,23 +13,23 @@ export const INITIAL_LESSONS = [
   },
   {
     id: "sch-mon-2",
-    title: "Calculus (Лекция)",
+    title: "Calculus 1 (Лекция)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "09:20",
     endTime: "10:05",
-    location: "Школа (10-Б)",
+    location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
   {
     id: "sch-mon-3",
-    title: "Calculus (Лекция)",
+    title: "Calculus 1 (Лекция)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "10:10",
     endTime: "10:55",
-    location: "Школа (10-Б)",
+    location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
@@ -68,13 +68,13 @@ export const INITIAL_LESSONS = [
   },
   {
     id: "nu-mon-1",
-    title: "Calculus (Семинар)",
+    title: "Calculus 1 (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "13:00",
     endTime: "14:30",
     location: "каб. 1-08",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
 
@@ -146,14 +146,25 @@ export const INITIAL_LESSONS = [
     periodicity: "weekly"
   },
   {
+    id: "nu-tue-lecture",
+    title: "Информатика (Лекция)",
+    type: "new_uzbekistan",
+    dayOfWeek: 2,
+    startTime: "13:00",
+    endTime: "14:30",
+    location: "Актовый зал (Faollar zali)",
+    teacher: "New Uzbekistan",
+    periodicity: "weekly"
+  },
+  {
     id: "nu-tue-1",
-    title: "Семинар по информатике",
+    title: "Информатика (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 2,
     startTime: "14:35",
     endTime: "16:00",
     location: "каб. 2-01",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "toq_only"
   },
 
@@ -226,14 +237,25 @@ export const INITIAL_LESSONS = [
   },
   {
     id: "nu-wed-1",
-    title: "Лабораторная по физике",
+    title: "Физика (Лабораторная)",
     type: "new_uzbekistan",
     dayOfWeek: 3,
     startTime: "14:00",
     endTime: "16:00",
-    location: "В университете",
-    teacher: "Университет New Uzbekistan",
+    location: "В университете (New U)",
+    teacher: "New Uzbekistan",
     periodicity: "toq_only"
+  },
+  {
+    id: "nu-wed-seminar",
+    title: "Физика (Семинар)",
+    type: "new_uzbekistan",
+    dayOfWeek: 3,
+    startTime: "14:00",
+    endTime: "16:00",
+    location: "каб. 1-08 / New U",
+    teacher: "New Uzbekistan",
+    periodicity: "juft_only"
   },
 
   // ЧЕТВЕРГ (dayOfWeek: 4)
@@ -305,13 +327,13 @@ export const INITIAL_LESSONS = [
   },
   {
     id: "nu-thu-1",
-    title: "Английский язык (Унив)",
+    title: "Английский язык (New U)",
     type: "new_uzbekistan",
     dayOfWeek: 4,
     startTime: "14:35",
     endTime: "16:00",
     location: "каб. 1-08",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
 
@@ -372,14 +394,25 @@ export const INITIAL_LESSONS = [
     periodicity: "weekly"
   },
   {
+    id: "nu-fri-lecture",
+    title: "Физика (Лекция)",
+    type: "new_uzbekistan",
+    dayOfWeek: 5,
+    startTime: "14:20",
+    endTime: "15:55",
+    location: "Актовый зал (Faollar zali)",
+    teacher: "New Uzbekistan",
+    periodicity: "juft_only"
+  },
+  {
     id: "nu-fri-1",
-    title: "Семинар по физике",
+    title: "Физика (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 5,
     startTime: "16:00",
     endTime: "17:30",
     location: "каб. 1-08",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "toq_only"
   }
 ];
@@ -402,23 +435,23 @@ export const INITIAL_LESSONS_GROUP2 = [
   },
   {
     id: "sch-g2-mon-2",
-    title: "Calculus (Лекция)",
+    title: "Calculus 1 (Лекция)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "09:20",
     endTime: "10:05",
-    location: "Школа (10-Б)",
+    location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
   {
     id: "sch-g2-mon-3",
-    title: "Calculus (Лекция)",
+    title: "Calculus 1 (Лекция)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "10:10",
     endTime: "10:55",
-    location: "Школа (10-Б)",
+    location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
@@ -457,13 +490,13 @@ export const INITIAL_LESSONS_GROUP2 = [
   },
   {
     id: "nu-g2-mon-1",
-    title: "Calculus (Семинар)",
+    title: "Calculus 1 (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 1,
     startTime: "13:00",
     endTime: "14:30",
     location: "каб. 1-08",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
 
@@ -535,14 +568,25 @@ export const INITIAL_LESSONS_GROUP2 = [
     periodicity: "weekly"
   },
   {
+    id: "nu-g2-tue-lecture",
+    title: "Информатика (Лекция)",
+    type: "new_uzbekistan",
+    dayOfWeek: 2,
+    startTime: "13:00",
+    endTime: "14:30",
+    location: "Актовый зал (Faollar zali)",
+    teacher: "New Uzbekistan",
+    periodicity: "weekly"
+  },
+  {
     id: "nu-g2-tue-1",
-    title: "Семинар по информатике",
+    title: "Информатика (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 2,
     startTime: "14:35",
     endTime: "16:00",
     location: "каб. 2-01",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "toq_only"
   },
 
@@ -615,14 +659,25 @@ export const INITIAL_LESSONS_GROUP2 = [
   },
   {
     id: "nu-g2-wed-1",
-    title: "Лабораторная по физике",
+    title: "Физика (Лабораторная)",
     type: "new_uzbekistan",
     dayOfWeek: 3,
     startTime: "14:00",
     endTime: "16:00",
-    location: "В университете",
-    teacher: "Университет New Uzbekistan",
+    location: "В университете (New U)",
+    teacher: "New Uzbekistan",
     periodicity: "toq_only"
+  },
+  {
+    id: "nu-g2-wed-seminar",
+    title: "Физика (Семинар)",
+    type: "new_uzbekistan",
+    dayOfWeek: 3,
+    startTime: "14:00",
+    endTime: "16:00",
+    location: "каб. 1-08 / New U",
+    teacher: "New Uzbekistan",
+    periodicity: "juft_only"
   },
 
   // ЧЕТВЕРГ (dayOfWeek: 4)
@@ -694,13 +749,13 @@ export const INITIAL_LESSONS_GROUP2 = [
   },
   {
     id: "nu-g2-thu-1",
-    title: "Английский язык (Унив)",
+    title: "Английский язык (New U)",
     type: "new_uzbekistan",
     dayOfWeek: 4,
     startTime: "14:35",
     endTime: "16:00",
     location: "каб. 1-08",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "weekly"
   },
 
@@ -761,14 +816,25 @@ export const INITIAL_LESSONS_GROUP2 = [
     periodicity: "weekly"
   },
   {
+    id: "nu-g2-fri-lecture",
+    title: "Физика (Лекция)",
+    type: "new_uzbekistan",
+    dayOfWeek: 5,
+    startTime: "14:20",
+    endTime: "15:55",
+    location: "Актовый зал (Faollar zali)",
+    teacher: "New Uzbekistan",
+    periodicity: "juft_only"
+  },
+  {
     id: "nu-g2-fri-1",
-    title: "Семинар по физике",
+    title: "Физика (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 5,
     startTime: "16:00",
     endTime: "17:30",
     location: "каб. 1-08",
-    teacher: "Университет New Uzbekistan",
+    teacher: "New Uzbekistan",
     periodicity: "toq_only"
   }
 ];

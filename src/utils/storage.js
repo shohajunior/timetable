@@ -1,6 +1,6 @@
 import { INITIAL_LESSONS, getInitialLessonsForGroup } from '../data/seedData';
 
-const getStorageKeyForGroup = (g = 1) => `school_timetable_10b_v3_g${Number(g) === 2 ? 2 : 1}`;
+const getStorageKeyForGroup = (g = 1) => `school_timetable_10b_v4_g${Number(g) === 2 ? 2 : 1}`;
 const HOMEWORK_STORAGE_KEY = 'school_homework_10b_v1';
 const USER_PROFILE_KEY = 'school_user_profile_10b_v1';
 

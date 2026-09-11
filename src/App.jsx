@@ -16,6 +16,7 @@ import {
 import { 
   subscribeToCloudData, 
   fetchCloudData,
+  fetchCloudUsers,
   saveCloudHomework, 
   saveCloudLessons, 
   saveCloudPersonalLessons, 
@@ -51,6 +52,16 @@ export default function App() {
     const p = loadUserProfile();
     return !p || p.isGuest || !p.name;
   });
+
+  // On first mount, immediately fetch users from Firebase
+  // so onboarding login screen already knows which users exist
+  useEffect(() => {
+    fetchCloudUsers().then(users => {
+      if (users && Object.keys(users).length > 0) {
+        setCloudUsers(users);
+      }
+    }).catch(() => {});
+  }, []);
 
   // Active viewing group: defaults to user profile group or 1
   const [activeGroup, setActiveGroup] = useState(() => {
@@ -161,6 +172,18 @@ export default function App() {
       }
     });
   }, [activeGroup, userProfile?.id]);
+
+  // Whenever the auth modal opens, immediately fetch fresh users from Firebase
+  // so login works correctly on other devices without waiting for the 3s poll
+  useEffect(() => {
+    if (isAuthModalOpen) {
+      fetchCloudUsers().then(users => {
+        if (users && Object.keys(users).length > 0) {
+          setCloudUsers(users);
+        }
+      }).catch(() => {});
+    }
+  }, [isAuthModalOpen]);
 
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -416,8 +439,13 @@ export default function App() {
         userProfile={userProfile}
         activeGroup={activeGroup}
         onToggleGroup={handleToggleGroup}
-        onOpenAuthModal={() => {
+        onOpenAuthModal={async () => {
           setIsOnboarding(false);
+          // Refresh users from Firebase right before opening modal
+          const latestUsers = await fetchCloudUsers();
+          if (latestUsers && Object.keys(latestUsers).length > 0) {
+            setCloudUsers(latestUsers);
+          }
           setIsAuthModalOpen(true);
         }}
       />

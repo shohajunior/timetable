@@ -187,3 +187,26 @@ export async function saveCloudUserProfile(profile) {
   }
   return false;
 }
+
+/**
+ * Fetch ONLY users from Firebase (fast, used for login check)
+ */
+export async function fetchCloudUsers() {
+  try {
+    const res = await fetch(`${FIREBASE_RTDB_URL}/users.json`);
+    if (res.ok) {
+      const data = await res.json();
+      const users = data && typeof data === 'object' ? data : {};
+      // Merge into cache
+      if (cachedCloudData) {
+        cachedCloudData.users = users;
+      } else {
+        cachedCloudData = { users };
+      }
+      return users;
+    }
+  } catch (err) {
+    console.warn('Failed to fetch users from Firebase:', err);
+  }
+  return (cachedCloudData?.users) || {};
+}

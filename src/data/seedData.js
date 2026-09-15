@@ -151,7 +151,7 @@ export const INITIAL_LESSONS = [
     type: "new_uzbekistan",
     dayOfWeek: 2,
     startTime: "13:00",
-    endTime: "14:30",
+    endTime: "14:40",
     location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "weekly"
@@ -161,7 +161,7 @@ export const INITIAL_LESSONS = [
     title: "Информатика (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 2,
-    startTime: "14:35",
+    startTime: "14:45",
     endTime: "16:00",
     location: "каб. 2-01",
     teacher: "New Uzbekistan",

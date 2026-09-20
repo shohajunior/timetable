@@ -100,19 +100,28 @@ export function subscribeToCloudData(onUpdate) {
 }
 
 /**
- * Save Homework list to Firebase Realtime DB
+ * Save Homework list to Firebase Realtime DB (unified across groups)
  */
 export async function saveCloudHomework(homeworkList) {
   try {
-    const res = await fetch(`${FIREBASE_RTDB_URL}/group1_homework.json`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(homeworkList)
-    });
-    if (res.ok) {
-      if (cachedCloudData) cachedCloudData.group1_homework = homeworkList;
-      return true;
+    const promises = [
+      fetch(`${FIREBASE_RTDB_URL}/homework.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(homeworkList)
+      }),
+      fetch(`${FIREBASE_RTDB_URL}/group1_homework.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(homeworkList)
+      })
+    ];
+    await Promise.all(promises);
+    if (cachedCloudData) {
+      cachedCloudData.homework = homeworkList;
+      cachedCloudData.group1_homework = homeworkList;
     }
+    return true;
   } catch (err) {
     console.error('Failed to save homework to Firebase:', err);
   }

@@ -17,6 +17,17 @@ export function AddHomeworkModal({ isOpen, onClose, onAddHomework, lessons, user
   const [nextLessonInfo, setNextLessonInfo] = useState(null);
   const [error, setError] = useState(null);
 
+  const [targetGroup, setTargetGroup] = useState(() => {
+    return userProfile?.group ? Number(userProfile.group) : 1;
+  });
+
+  // Set targetGroup when modal opens to user's registered group
+  useEffect(() => {
+    if (isOpen && userProfile?.group) {
+      setTargetGroup(Number(userProfile.group));
+    }
+  }, [isOpen]);
+
   // Recalculate next lesson whenever subject or lessons change
   useEffect(() => {
     if (subject) {
@@ -41,6 +52,7 @@ export function AddHomeworkModal({ isOpen, onClose, onAddHomework, lessons, user
       id: 'hw-user-' + Date.now(),
       subject: subject,
       description: description.trim(),
+      targetGroup: targetGroup, // 1 | 2 | 'all'
       dueDate: finalDueDate,
       dueType: dueType,
       dueDateLabel: dueType === 'next_lesson' ? nextLessonInfo?.formattedLabel : null,
@@ -92,6 +104,48 @@ export function AddHomeworkModal({ isOpen, onClose, onAddHomework, lessons, user
                 {error}
               </div>
             )}
+
+            {/* Target Group Selector */}
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1.5">
+                Для какой группы: <span className="text-rose-500">*</span>
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setTargetGroup(1)}
+                  className={`py-2 px-2.5 rounded-xl border text-center font-bold text-xs transition-all ${
+                    targetGroup === 1
+                      ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  1 группа
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTargetGroup(2)}
+                  className={`py-2 px-2.5 rounded-xl border text-center font-bold text-xs transition-all ${
+                    targetGroup === 2
+                      ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  2 группа
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTargetGroup('all')}
+                  className={`py-2 px-2.5 rounded-xl border text-center font-bold text-xs transition-all ${
+                    targetGroup === 'all'
+                      ? 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  Обе группы
+                </button>
+              </div>
+            </div>
 
             {/* Subject Selector */}
             <div>

@@ -22,6 +22,8 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
   const [validationError, setValidationError] = useState(null);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     if (initialLesson) {
       const initialDay = Number(initialLesson.dayOfWeek || 1);
       setFormData({
@@ -31,7 +33,7 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
         dayOfWeek: initialDay,
         startTime: initialLesson.startTime || '08:30',
         endTime: initialLesson.endTime || '09:15',
-        location: initialLesson.location || '',
+        location: initialLesson.location || (initialLesson.type === 'personal' ? 'Личное' : 'Школа (10-Б)'),
         teacher: initialLesson.teacher || '',
         periodicity: initialLesson.periodicity || 'weekly',
         specificDate: initialLesson.specificDate || '',
@@ -48,12 +50,13 @@ export function ActivityModal({ isOpen, onClose, onSave, onDelete, initialLesson
         location: 'Школа (10-Б)',
         teacher: '',
         periodicity: 'weekly',
-        specificDate: ''
+        specificDate: '',
+        userId: userProfile?.id || null
       });
       setSelectedDays([1]);
     }
     setValidationError(null);
-  }, [initialLesson, isOpen, userProfile]);
+  }, [isOpen]);
 
   // Check collision whenever form values change
   useEffect(() => {

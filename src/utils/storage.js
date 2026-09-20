@@ -4,41 +4,7 @@ const getStorageKeyForGroup = (g = 1) => `school_timetable_10b_v4_g${Number(g) =
 const HOMEWORK_STORAGE_KEY = 'school_homework_10b_v1';
 const USER_PROFILE_KEY = 'school_user_profile_10b_v1';
 
-export const INITIAL_HOMEWORK = [
-  {
-    id: 'hw-seed-1',
-    subject: 'Алгебра',
-    description: 'Решить №124, 126 на стр. 48. Подготовиться к самостоятельной работы по тригонометрии.',
-    dueDate: '2026-09-09',
-    dueType: 'next_lesson',
-    createdBy: 'Шохрух',
-    createdById: 'user-default-1',
-    createdAt: new Date().toISOString(),
-    isCompleted: false
-  },
-  {
-    id: 'hw-seed-2',
-    subject: 'Информатика',
-    description: 'Лабораторная работа: дописать скрипт на Python и сдать отчёт.',
-    dueDate: '2026-09-10',
-    dueType: 'next_lesson',
-    createdBy: 'Мадина',
-    createdById: 'user-default-2',
-    createdAt: new Date().toISOString(),
-    isCompleted: false
-  },
-  {
-    id: 'hw-seed-3',
-    subject: 'Английский язык',
-    description: 'Student Book page 52 ex 3-5. Выучить новые слова по теме Unit 4.',
-    dueDate: '2026-09-11',
-    dueType: 'next_lesson',
-    createdBy: 'Тимур',
-    createdById: 'user-default-3',
-    createdAt: new Date().toISOString(),
-    isCompleted: true
-  }
-];
+export const INITIAL_HOMEWORK = [];
 
 export function loadLessonsFromStorage(groupNumber = 1) {
   const defaultLessons = getInitialLessonsForGroup(groupNumber);
@@ -80,13 +46,16 @@ export function loadHomeworkFromStorage() {
   try {
     const saved = localStorage.getItem(HOMEWORK_STORAGE_KEY);
     if (!saved) {
-      localStorage.setItem(HOMEWORK_STORAGE_KEY, JSON.stringify(INITIAL_HOMEWORK));
-      return INITIAL_HOMEWORK;
+      return [];
     }
-    return JSON.parse(saved);
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed)) {
+      return parsed.filter(item => !item.id?.startsWith('hw-seed-'));
+    }
+    return [];
   } catch (error) {
     console.error('Failed to load homework from localStorage:', error);
-    return INITIAL_HOMEWORK;
+    return [];
   }
 }
 

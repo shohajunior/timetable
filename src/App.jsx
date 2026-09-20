@@ -126,21 +126,24 @@ export default function App() {
         saveLessonsToStorage(combined, activeGroup);
       }
 
-      // 2. Sync Shared Homework from Cloud
-      if (Array.isArray(cloudData.group1_homework)) {
-        setHomeworkList(cloudData.group1_homework);
-        saveHomeworkToStorage(cloudData.group1_homework);
+      // 2. Sync Shared Homework from Cloud (unified for both groups)
+      const cloudHw = cloudData.homework || cloudData.group1_homework;
+      if (Array.isArray(cloudHw)) {
+        const cleanHw = cloudHw.filter(h => !h.id?.startsWith('hw-seed-') && h.description?.trim().toLowerCase() !== 'ничего');
+        setHomeworkList(cleanHw);
+        saveHomeworkToStorage(cleanHw);
       }
 
       // 3. Sync User Profile if registered or updated on another computer
       if (userProfile?.id && cloudData.users?.[userProfile.id]) {
         const remoteUser = cloudData.users[userProfile.id];
-        if (
-          remoteUser.group !== userProfile.group || 
-          remoteUser.color !== userProfile.color || 
-          remoteUser.password !== userProfile.password ||
-          remoteUser.name !== userProfile.name
-        ) {
+        const isDifferent = 
+          String(remoteUser.group || 1) !== String(userProfile.group || 1) || 
+          String(remoteUser.color || '') !== String(userProfile.color || '') || 
+          String(remoteUser.password || '') !== String(userProfile.password || '') ||
+          String(remoteUser.name || '') !== String(userProfile.name || '');
+
+        if (isDifferent) {
           const updated = { ...userProfile, ...remoteUser };
           setUserProfile(updated);
           saveUserProfile(updated);
@@ -169,6 +172,11 @@ export default function App() {
         const combined = [...shared, ...cloudPersonal];
         setLessons(combined);
         saveLessonsToStorage(combined, activeGroup);
+      const cloudHw = cloudData.homework || cloudData.group1_homework;
+      if (Array.isArray(cloudHw)) {
+        const cleanHw = cloudHw.filter(h => !h.id?.startsWith('hw-seed-') && h.description?.trim().toLowerCase() !== 'ничего');
+        setHomeworkList(cleanHw);
+        saveHomeworkToStorage(cleanHw);
       }
     });
   }, [activeGroup, userProfile?.id]);

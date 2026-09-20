@@ -24,6 +24,7 @@ export function HomeworkView({
   userProfile
 }) {
   const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'pending' | 'completed'
+  const [filterGroup, setFilterGroup] = useState('all'); // 'all' | '1' | '2'
   const [selectedSubject, setSelectedSubject] = useState('all');
 
   const availableSubjects = getAvailableSubjects(lessons);
@@ -33,6 +34,16 @@ export function HomeworkView({
     // Status filter
     if (filterStatus === 'pending' && item.isCompleted) return false;
     if (filterStatus === 'completed' && !item.isCompleted) return false;
+
+    // Group filter
+    if (filterGroup === '1') {
+      const g = item.targetGroup ?? item.group;
+      if (g !== 1 && g !== '1' && g !== 'all' && g !== undefined) return false;
+    }
+    if (filterGroup === '2') {
+      const g = item.targetGroup ?? item.group;
+      if (g !== 2 && g !== '2' && g !== 'all' && g !== undefined) return false;
+    }
 
     // Subject filter
     if (selectedSubject !== 'all' && item.subject !== selectedSubject) return false;
@@ -69,10 +80,7 @@ export function HomeworkView({
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                Домашние задания 
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                  1 группа
-                </span>
+                Домашние задания
               </h2>
               <p className="text-[11px] sm:text-xs text-slate-500">
                 Общая база домашних заданий 10-Б класса
@@ -92,38 +100,74 @@ export function HomeworkView({
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-100 text-xs">
           
-          {/* Status Tabs */}
-          <div className="flex p-0.5 bg-slate-100 rounded-xl border border-slate-200 shrink-0">
-            <button
-              onClick={() => setFilterStatus('all')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
-                filterStatus === 'all'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Все ({homeworkList.length})
-            </button>
-            <button
-              onClick={() => setFilterStatus('pending')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all flex items-center gap-1 ${
-                filterStatus === 'pending'
-                  ? 'bg-amber-500 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              К сдаче ({pendingCount})
-            </button>
-            <button
-              onClick={() => setFilterStatus('completed')}
-              className={`px-3 py-1 rounded-lg font-semibold transition-all ${
-                filterStatus === 'completed'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Выполнено ({completedCount})
-            </button>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Status Tabs */}
+            <div className="flex p-0.5 bg-slate-100 rounded-xl border border-slate-200 shrink-0">
+              <button
+                onClick={() => setFilterStatus('all')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                  filterStatus === 'all'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Все ({homeworkList.length})
+              </button>
+              <button
+                onClick={() => setFilterStatus('pending')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-all flex items-center gap-1 ${
+                  filterStatus === 'pending'
+                    ? 'bg-amber-500 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                К сдаче ({pendingCount})
+              </button>
+              <button
+                onClick={() => setFilterStatus('completed')}
+                className={`px-3 py-1 rounded-lg font-semibold transition-all ${
+                  filterStatus === 'completed'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Выполнено ({completedCount})
+              </button>
+            </div>
+
+            {/* Group Filter Tabs */}
+            <div className="flex p-0.5 bg-slate-100 rounded-xl border border-slate-200 shrink-0">
+              <button
+                onClick={() => setFilterGroup('all')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                  filterGroup === 'all'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Все группы
+              </button>
+              <button
+                onClick={() => setFilterGroup('1')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                  filterGroup === '1'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                1 группа
+              </button>
+              <button
+                onClick={() => setFilterGroup('2')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all ${
+                  filterGroup === '2'
+                    ? 'bg-violet-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                2 группа
+              </button>
+            </div>
           </div>
 
           {/* Subject Filter Dropdown */}
@@ -183,6 +227,21 @@ export function HomeworkView({
                         <span className={`px-2.5 py-0.5 rounded-lg text-xs font-bold border ${colors.bg}`}>
                           {item.subject}
                         </span>
+                        {(item.targetGroup === 1 || item.targetGroup === '1') && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            1 группа
+                          </span>
+                        )}
+                        {(item.targetGroup === 2 || item.targetGroup === '2') && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-violet-50 text-violet-700 border border-violet-200">
+                            2 группа
+                          </span>
+                        )}
+                        {(!item.targetGroup || item.targetGroup === 'all') && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200">
+                            Обе группы
+                          </span>
+                        )}
                         {item.dueType === 'next_lesson' && (
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
                             <Clock className="w-3 h-3 text-emerald-600" /> След. урок

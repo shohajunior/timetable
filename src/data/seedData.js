@@ -151,7 +151,7 @@ export const INITIAL_LESSONS = [
     type: "new_uzbekistan",
     dayOfWeek: 2,
     startTime: "13:00",
-    endTime: "14:40",
+    endTime: "14:30",
     location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "weekly"
@@ -161,7 +161,7 @@ export const INITIAL_LESSONS = [
     title: "Информатика (Семинар)",
     type: "new_uzbekistan",
     dayOfWeek: 2,
-    startTime: "14:45",
+    startTime: "14:35",
     endTime: "16:00",
     location: "каб. 2-01",
     teacher: "New Uzbekistan",
@@ -403,17 +403,6 @@ export const INITIAL_LESSONS = [
     location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "juft_only"
-  },
-  {
-    id: "nu-fri-1",
-    title: "Физика (Семинар)",
-    type: "new_uzbekistan",
-    dayOfWeek: 5,
-    startTime: "16:00",
-    endTime: "17:30",
-    location: "каб. 1-08",
-    teacher: "New Uzbekistan",
-    periodicity: "toq_only"
   }
 ];
 
@@ -825,17 +814,6 @@ export const INITIAL_LESSONS_GROUP2 = [
     location: "Актовый зал (Faollar zali)",
     teacher: "New Uzbekistan",
     periodicity: "juft_only"
-  },
-  {
-    id: "nu-g2-fri-1",
-    title: "Физика (Семинар)",
-    type: "new_uzbekistan",
-    dayOfWeek: 5,
-    startTime: "16:00",
-    endTime: "17:30",
-    location: "каб. 1-08",
-    teacher: "New Uzbekistan",
-    periodicity: "toq_only"
   }
 ];
 

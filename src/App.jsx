@@ -172,6 +172,7 @@ export default function App() {
         const combined = [...shared, ...cloudPersonal];
         setLessons(combined);
         saveLessonsToStorage(combined, activeGroup);
+      }
       const cloudHw = cloudData.homework || cloudData.group1_homework;
       if (Array.isArray(cloudHw)) {
         const cleanHw = cloudHw.filter(h => !h.id?.startsWith('hw-seed-') && h.description?.trim().toLowerCase() !== 'ничего');
